@@ -27,7 +27,7 @@ dependencies {
 
 tasks.withType<ShadowJar> {
     minimize()
-    archiveFileName.set("NewYearAmazingNight2023-$version.jar")
+    archiveFileName.set("NewYearAmazingNight2024-$version.jar")
 }
 
 application {

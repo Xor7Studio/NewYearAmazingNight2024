@@ -4,23 +4,24 @@ import org.bukkit.Location
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/*
-*                     E(Xe, Ye, Ze)
-*                    /|
-*                   / |
-*                  /  |
-*                 /   |
-*                /    |
-*               /     |
-*  P(Xp,Yp,Zp) <------| H(Xh, Yh, Zh)
-*               \   |_|
-*                \    |
-*                 \   |
-*                  \  |
-*                   \ |
-*                    \|
-*                     B(Xb, Yb, Zb)
-* */
+/**
+ *                      E
+ *                     /|
+ *                    / |
+ *                   /  |
+ *                  /   |
+ *                 /    |
+ *                /     |
+ *               P------|
+ *                \   |_|
+ *                 \    |
+ *                  \   |
+ *                   \  |
+ *                    \ |
+ *                     \|
+ *                      B
+ * P(Xp,Yp,Zp),H(Xh, Yh, Zh),B(Xb, Yb, Zb),E(Xe, Ye, Ze)
+ */
 @Suppress("PrivatePropertyName", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class MapSection(val beginPos: Location, val endPos: Location ){
     init {

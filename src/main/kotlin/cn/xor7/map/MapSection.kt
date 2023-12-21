@@ -43,7 +43,7 @@ class MapSection(val beginPos: Location, val endPos: Location ){
     private val `2(Ye - Yb)` = 2 * (endPos.y - beginPos.y)
     private val `2(Ze - Zb)` = 2 * (endPos.z - beginPos.z)
 
-    fun getLengthToBeginPos(location: Location): Double {
+    fun getPosition(location: Location): Double {
         if (location.world != beginPos.world) {
             throw IllegalArgumentException("location must be in the same world as beginPos")
         }
@@ -55,4 +55,8 @@ class MapSection(val beginPos: Location, val endPos: Location ){
                 `2(Ze - Zb)` * location.z
                 ) / doubleSectionLength - halfSectionLength
     }
+}
+
+fun Location.positionIn(section: MapSection): Double {
+    return section.getPosition(this)
 }

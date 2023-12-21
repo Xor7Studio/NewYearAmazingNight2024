@@ -1,4 +1,4 @@
-package map
+package cn.xor7.map
 
 import org.bukkit.Location
 import kotlin.math.pow

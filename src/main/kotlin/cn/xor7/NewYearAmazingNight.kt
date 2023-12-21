@@ -1,3 +1,5 @@
+package cn.xor7
+
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused")

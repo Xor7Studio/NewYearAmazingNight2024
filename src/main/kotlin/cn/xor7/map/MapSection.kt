@@ -23,14 +23,9 @@ import kotlin.math.sqrt
  * P(Xp,Yp,Zp),H(Xh, Yh, Zh),B(Xb, Yb, Zb),E(Xe, Ye, Ze)
  */
 @Suppress("PrivatePropertyName", "MemberVisibilityCanBePrivate", "CanBeParameter")
-class MapSection(val beginPos: Location, val endPos: Location ){
-    init {
-
-        if (beginPos.world != endPos.world) {
-            throw IllegalArgumentException("beginPos and endPos must be in the same world")
-        }
-    }
-
+class MapSection(private val data: MapSectionData) {
+    val beginPos = data.beginPos
+    val endPos = data.endPos
     val sectionLength = sqrt(
         (beginPos.x - endPos.x).pow(2.0) + (beginPos.y - endPos.y).pow(2.0) + (beginPos.z - endPos.z).pow(2.0)
     )
@@ -45,9 +40,6 @@ class MapSection(val beginPos: Location, val endPos: Location ){
     private val `2(Ze - Zb)` = 2 * (endPos.z - beginPos.z)
 
     fun getPosition(location: Location): Double {
-        if (location.world != beginPos.world) {
-            throw IllegalArgumentException("location must be in the same world as beginPos")
-        }
         return (`Xb^2 - Xe^2` +
                 `Yb^2 - Ye^2` +
                 `Zb^2 - Ze^2` +

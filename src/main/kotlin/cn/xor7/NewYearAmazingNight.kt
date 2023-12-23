@@ -23,3 +23,15 @@ class NewYearAmazingNight : JavaPlugin() {
 fun Player.sendToSpawnPoint() {
     this.teleport(this.bedSpawnLocation ?: this.world.spawnLocation)
 }
+
+fun Player.toggleDevelopmentMode(): Boolean {
+    return if (GameMap.trackers[this.name]!!.developmentMode) {
+        GameMap.trackers[this.name]!!.developmentMode = false
+        this.sendMessage("§a已关闭开发者模式")
+        false
+    } else {
+        GameMap.trackers[this.name]!!.developmentMode = true
+        this.sendMessage("§a已开启开发者模式")
+        true
+    }
+}

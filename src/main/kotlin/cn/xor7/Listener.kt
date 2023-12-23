@@ -9,7 +9,7 @@ class Listener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent){
         event.player.sendMessage("Hello, ${event.player.name}!")
-        if(!GameMap.trackers.containsKey(event.player.name))
+        if(!GameMap.getTrackers().containsKey(event.player.name))
             GameMap.createTracker(event.player)
     }
 }

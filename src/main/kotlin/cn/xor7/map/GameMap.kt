@@ -9,8 +9,7 @@ import java.nio.file.Paths
 
 @Suppress("MemberVisibilityCanBePrivate")
 object GameMap {
-    val trackers = mutableMapOf<String, PlayerTracker>()
-
+    private val trackers = mutableMapOf<String, PlayerTracker>()
     private val sections = mutableMapOf<Int, MapSection>()
     private val lengthPrefixSum = mutableMapOf<Int, Double>()
     private val json = Json { prettyPrint = true }
@@ -28,6 +27,12 @@ object GameMap {
     }
 
     fun getSection(sectionId: Int) = sections[sectionId]
+
+    fun getSections() = sections.toMap()
+
+    fun getTracker(playerName: String) = trackers[playerName]
+
+    fun getTrackers() = trackers.toMap()
 
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 

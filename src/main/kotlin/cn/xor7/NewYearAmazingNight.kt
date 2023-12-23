@@ -10,7 +10,7 @@ class NewYearAmazingNight : JavaPlugin() {
         server.pluginManager.registerEvents(Listener(), this)
         object : BukkitRunnable() {
             override fun run() {
-                GameMap.trackers.forEach { (_, tracker) ->
+                GameMap.getTrackers().forEach { (_, tracker) ->
                     tracker.trackNowSection()
                 }
             }

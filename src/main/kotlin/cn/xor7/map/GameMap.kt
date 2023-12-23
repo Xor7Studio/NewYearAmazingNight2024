@@ -2,14 +2,14 @@ package cn.xor7.map
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.bukkit.entity.Player
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 object GameMap {
-    private val trackers = mutableMapOf<String, PlayerTracker>()
+    internal val trackers = mutableMapOf<String, PlayerTracker>()
+    internal val ranking = mutableListOf<PlayerTracker>()
     private val sections = mutableMapOf<Int, MapSection>()
     private val lengthPrefixSum = mutableMapOf<Int, Double>()
     private val json = Json { prettyPrint = true }
@@ -22,17 +22,16 @@ object GameMap {
         }
     }
 
-    fun createTracker(player: Player) {
-        trackers[player.name] = PlayerTracker(player.name)
+    fun tick() {
+        trackers.forEach { (_, tracker) ->
+            tracker.trackNowSection()
+        }
+        ranking.sortBy { tracker -> tracker.nowPosition }
     }
 
+    fun getRanking() = ranking.toList()
+
     fun getSection(sectionId: Int) = sections[sectionId]
-
-    fun getSections() = sections.toMap()
-
-    fun getTracker(playerName: String) = trackers[playerName]
-
-    fun getTrackers() = trackers.toMap()
 
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 

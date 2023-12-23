@@ -5,7 +5,9 @@ import org.bukkit.Bukkit
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
     var nowSectionId: Int = 0
+        private set
     var nowPosition: Double = 0.0
+        private set
 
     fun trackNowSection() {
         val player = Bukkit.getPlayer(playerName) ?: return

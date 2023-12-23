@@ -26,7 +26,7 @@ object GameMap {
         trackers.forEach { (_, tracker) ->
             tracker.trackNowSection()
         }
-        ranking.sortBy { tracker -> tracker.nowPosition }
+        ranking.insertionSort(compareBy({ it.nowPosition }, { it.playerName }))
     }
 
     fun getRanking() = ranking.toList()
@@ -53,6 +53,19 @@ object GameMap {
             e.printStackTrace()
             mapJsonFile.writeText("{}")
             loadMap()
+        }
+    }
+
+    fun MutableList<PlayerTracker>.insertionSort(compare: Comparator<PlayerTracker>) {
+        for (i in 1 until size) {
+            val key = this[i]
+            var j = i - 1
+
+            while (j >= 0 && compare.compare(this[j], key) > 0) {
+                this[j + 1] = this[j]
+                j--
+            }
+            this[j + 1] = key
         }
     }
 }

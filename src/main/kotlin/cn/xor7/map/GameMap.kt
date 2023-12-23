@@ -7,7 +7,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 object GameMap {
     private val trackers = mutableMapOf<String, PlayerTracker>()
     private val sections = mutableMapOf<Int, MapSection>()

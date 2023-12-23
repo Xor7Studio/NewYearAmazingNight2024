@@ -39,17 +39,17 @@ class MapSection(private val data: MapSectionData) {
     private val `2(Ye - Yb)` = 2 * (endPos.y - beginPos.y)
     private val `2(Ze - Zb)` = 2 * (endPos.z - beginPos.z)
 
-    fun getPosition(location: Location): Double {
-        return (`Xb^2 - Xe^2` +
-                `Yb^2 - Ye^2` +
-                `Zb^2 - Ze^2` +
-                `2(Xe - Xb)` * location.x +
-                `2(Ye - Yb)` * location.y +
-                `2(Ze - Zb)` * location.z
-                ) / doubleSectionLength - halfSectionLength
-    }
-}
+    fun getPosition(location: Location): Double = ((
+            `Xb^2 - Xe^2` +
+            `Yb^2 - Ye^2` +
+            `Zb^2 - Ze^2` +
+            `2(Xe - Xb)` * location.x +
+            `2(Ye - Yb)` * location.y +
+            `2(Ze - Zb)` * location.z
+            ) / doubleSectionLength) + halfSectionLength
 
-fun Location.positionIn(section: MapSection): Double {
-    return section.getPosition(this)
+    fun getDistanceSquared(location: Location): Double =
+        (beginPos.x - location.x).pow(2.0) +
+        (beginPos.y - location.y).pow(2.0) +
+        (beginPos.z - location.z).pow(2.0)
 }

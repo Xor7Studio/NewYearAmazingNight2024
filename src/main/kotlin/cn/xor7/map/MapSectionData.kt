@@ -7,5 +7,4 @@ import org.bukkit.Location
 data class MapSectionData(
     val beginPos: SimpleLocation,
     val endPos: SimpleLocation,
-    val block: Boolean,
 )

@@ -33,6 +33,8 @@ object GameMap {
 
     fun getSection(sectionId: Int) = sections[sectionId]
 
+    fun haveSection(sectionId: Int) = sections.containsKey(sectionId)
+
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 
     fun loadMap() {

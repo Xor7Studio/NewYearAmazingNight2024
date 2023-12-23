@@ -26,6 +26,8 @@ import kotlin.math.sqrt
 class MapSection(private val data: MapSectionData) {
     val beginPos = data.beginPos
     val endPos = data.endPos
+    val radius = data.radius
+    val radiusSquared = radius.pow(2.0)
     val sectionLength = sqrt(
         (beginPos.x - endPos.x).pow(2.0) + (beginPos.y - endPos.y).pow(2.0) + (beginPos.z - endPos.z).pow(2.0)
     )

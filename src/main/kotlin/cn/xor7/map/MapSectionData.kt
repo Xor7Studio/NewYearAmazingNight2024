@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class MapSectionData(
     val beginPos: SimpleLocation,
     val endPos: SimpleLocation,
+    val radius: Double,
 )

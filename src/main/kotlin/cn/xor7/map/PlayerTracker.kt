@@ -1,21 +1,27 @@
 package cn.xor7.map
 
+import cn.xor7.sendToSpawnPoint
 import org.bukkit.Bukkit
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
     var nowSectionId: Int = 0
+        private set(newValue) {
+            field = newValue
+            nowSection = GameMap.getSection(newValue)!!
+        }
+
+    var nowSection: MapSection = GameMap.getSection(0)!!
         private set
     var nowPosition: Double = 0.0
         private set
 
+    var developmentMode = false
+
     fun trackNowSection() {
         val player = Bukkit.getPlayer(playerName) ?: return
 
-        val nowSection: MapSection = GameMap.getSection(nowSectionId) ?: run {
-            nowSectionId = 0
-            GameMap.getSection(0)!!
-        }
+        if (!GameMap.haveSection(nowSectionId)) nowSectionId = 0
 
         var minDistanceSquared = nowSection.getDistanceSquared(player.location)
         var nowSectionPosition = nowSection.getPosition(player.location)
@@ -29,6 +35,14 @@ class PlayerTracker internal constructor(val playerName: String) {
                 minDistanceSquared = distanceSquared
                 nowSectionPosition = position
             }
+        }
+
+        if (!developmentMode && minDistanceSquared > nowSection.radiusSquared) player.sendToSpawnPoint()
+
+        nowSectionPosition = when {
+            nowSectionPosition > nowSection.sectionLength -> nowSection.sectionLength
+            nowSectionPosition < 0 -> 0.0
+            else -> nowSectionPosition
         }
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition

@@ -36,7 +36,7 @@ object GameMap {
         if (!mapJsonFile.isFile) mapJsonFile.createNewFile()
         try {
             val gameMapData = json.decodeFromString<GameMapData>(Files.readString(Paths.get("map.json")))
-            gameMapData.sections.forEach() { (id, sectionData) ->
+            gameMapData.sections.forEach { (id, sectionData) ->
                 sections[id] = MapSection(sectionData)
             }
             sections.forEach { (id, section) ->

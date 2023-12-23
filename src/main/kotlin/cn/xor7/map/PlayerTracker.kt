@@ -12,16 +12,16 @@ class PlayerTracker internal constructor(val playerName: String) {
     fun trackNowSection() {
         val player = Bukkit.getPlayer(playerName) ?: return
 
-        val nowSection: MapSection = GameMap.sections[nowSectionId] ?: run {
+        val nowSection: MapSection = GameMap.getSection(nowSectionId) ?: run {
             nowSectionId = 0
-            GameMap.sections[0]!!
+            GameMap.getSection(0)!!
         }
 
         var minDistanceSquared = nowSection.getDistanceSquared(player.location)
         var nowSectionPosition = nowSection.getPosition(player.location)
         for (i in nowSectionId - 2..nowSectionId + 2) {
             if (i == nowSectionId) continue
-            val section = GameMap.sections[i] ?: continue
+            val section = GameMap.getSection(i) ?: continue
             val position = section.getPosition(player.location)
             val distanceSquared = section.getDistanceSquared(player.location)
             if (distanceSquared < minDistanceSquared) {

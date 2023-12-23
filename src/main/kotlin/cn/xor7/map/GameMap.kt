@@ -9,9 +9,9 @@ import java.nio.file.Paths
 
 @Suppress("MemberVisibilityCanBePrivate")
 object GameMap {
-    val sections = mutableMapOf<Int, MapSection>()
     val trackers = mutableMapOf<String, PlayerTracker>()
 
+    private val sections = mutableMapOf<Int, MapSection>()
     private val lengthPrefixSum = mutableMapOf<Int, Double>()
     private val json = Json { prettyPrint = true }
 
@@ -26,6 +26,8 @@ object GameMap {
     fun createTracker(player: Player) {
         trackers[player.name] = PlayerTracker(player.name)
     }
+
+    fun getSection(sectionId: Int) = sections[sectionId]
 
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 

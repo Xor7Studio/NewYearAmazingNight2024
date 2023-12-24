@@ -13,11 +13,11 @@ group = "cn.xor7"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenCentral()
     maven ("https://repo.leavesmc.top/snapshots")
     maven ("https://maven.aliyun.com/repository/public/")
     maven ("https://repo.aikar.co/content/groups/aikar/")
     maven ("https://www.jitpack.io")
-    mavenCentral()
 }
 
 tasks.withType<KotlinCompile> {
@@ -28,6 +28,7 @@ tasks.withType<KotlinCompile> {
 dependencies {
     compileOnly("top.leavesmc.leaves:leaves-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
+    implementation("fr.mrmicky:fastboard:2.0.2")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation(kotlin("stdlib-jdk8"))
@@ -38,4 +39,5 @@ tasks.withType<ShadowJar> {
     archiveFileName.set("NewYearAmazingNight2024-$version.jar")
     relocate("co.aikar.commands", "cn.xor7.acf")
     relocate("co.aikar.locales", "cn.xor7.locales")
+    relocate("fr.mrmicky.fastboard","cn.xor7.fastboard")
 }

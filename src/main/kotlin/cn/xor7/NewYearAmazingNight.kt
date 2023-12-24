@@ -13,13 +13,15 @@ import org.bukkit.scheduler.BukkitRunnable
 class NewYearAmazingNight : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     override fun onEnable() {
-        ScoreboardManager.plugin = this
         server.pluginManager.registerEvents(Listener(), this)
         commandManager = PaperCommandManager(this)
         commandManager.registerCommand(DevelopmentModeCommand())
         commandManager.registerCommand(ParticleCommand())
         object : BukkitRunnable() {
-            override fun run() = GameMap.tick()
+            override fun run() {
+                GameMap.tick()
+                ScoreboardManager.updateScoreboard()
+            }
         }.runTaskTimer(this, 0L, 20L)
     }
 }

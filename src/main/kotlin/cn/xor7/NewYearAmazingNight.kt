@@ -7,14 +7,12 @@ import co.aikar.commands.PaperCommandManager
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
-import top.zoyn.particlelib.ParticleLib
 
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     override fun onEnable() {
         server.pluginManager.registerEvents(Listener(), this)
-        server.pluginManager.enablePlugin(ParticleLib())
         commandManager = PaperCommandManager(this)
         commandManager.registerCommand(DevelopmentModeCommand())
         commandManager.registerCommand(ParticleCommand())

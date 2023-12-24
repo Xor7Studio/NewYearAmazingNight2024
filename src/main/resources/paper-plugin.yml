@@ -4,3 +4,8 @@ main: cn.xor7.NewYearAmazingNight
 api-version: "1.20"
 authors:
   - MC_XiaoHei
+dependencies:
+  server:
+    ParticleLib:
+      load: BEFORE
+      required: true

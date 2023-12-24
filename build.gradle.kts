@@ -27,7 +27,7 @@ tasks.withType<KotlinCompile> {
 @Suppress("VulnerableLibrariesLocal")
 dependencies {
     compileOnly("top.leavesmc.leaves:leaves-api:1.20.1-R0.1-SNAPSHOT")
-    implementation("com.github.602723113:ParticleLib:1.5.0")
+    compileOnly("com.github.602723113:ParticleLib:1.5.1")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation(kotlin("stdlib-jdk8"))

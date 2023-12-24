@@ -16,6 +16,7 @@ object GameMap {
     private val lengthPrefixSum = mutableMapOf<Int, Double>()
     private val json = Json { prettyPrint = true }
     var showingMapParticle = false
+    var showingRadiusParticle = false
 
     init {
         try {
@@ -43,15 +44,29 @@ object GameMap {
     fun toggleMapParticle() {
         if (showingMapParticle) {
             sections.forEach { (_, section) ->
-                section.particle.turnOffTask()
+                section.mapParticle.turnOffTask()
             }
         } else {
             sections.forEach { (_, section) ->
-                section.particle.alwaysShowAsync()
+                section.mapParticle.alwaysShowAsync()
             }
         }
         showingMapParticle = !showingMapParticle
-        Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道指示粒子"))
+        Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道路线指示粒子"))
+    }
+
+    fun toggleRadiusParticle() {
+        if (showingRadiusParticle) {
+            sections.forEach { (_, section) ->
+                section.radiusParticle.turnOffTask()
+            }
+        } else {
+            sections.forEach { (_, section) ->
+                section.radiusParticle.alwaysShowAsync()
+            }
+        }
+        showingRadiusParticle = !showingRadiusParticle
+        Bukkit.broadcast(Component.text("§a已${if (showingRadiusParticle) "开启" else "关闭"}赛道半径指示粒子"))
     }
 
     fun loadMap() {
@@ -70,8 +85,6 @@ object GameMap {
             mapJsonFile.writeText(json.encodeToString(gameMapData))
         } catch (e: Exception) {
             e.printStackTrace()
-            mapJsonFile.writeText("{}")
-            loadMap()
         }
     }
 

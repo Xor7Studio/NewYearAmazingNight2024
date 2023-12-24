@@ -58,11 +58,11 @@ object GameMap {
     fun toggleRadiusParticle() {
         if (showingRadiusParticle) {
             sections.forEach { (_, section) ->
-                section.radiusParticle.turnOffTask()
+                section.tunOffRadiusParticleTask()
             }
         } else {
             sections.forEach { (_, section) ->
-                section.radiusParticle.alwaysShowAsync()
+                section.showRadiusParticle()
             }
         }
         showingRadiusParticle = !showingRadiusParticle

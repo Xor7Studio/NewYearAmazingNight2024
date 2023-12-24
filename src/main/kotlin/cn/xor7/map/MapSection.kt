@@ -1,6 +1,8 @@
 package cn.xor7.map
 
 import org.bukkit.Location
+import top.zoyn.particlelib.pobject.Line
+import top.zoyn.particlelib.pobject.ParticleObject
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -31,6 +33,7 @@ class MapSection(private val data: MapSectionData) {
     val sectionLength = sqrt(
         (beginPos.x - endPos.x).pow(2.0) + (beginPos.y - endPos.y).pow(2.0) + (beginPos.z - endPos.z).pow(2.0)
     )
+    val particle: ParticleObject = Line(beginPos.toLocation(), endPos.toLocation())
 
     private val doubleSectionLength = 2 * sectionLength
     private val halfSectionLength = sectionLength / 2
@@ -43,15 +46,16 @@ class MapSection(private val data: MapSectionData) {
 
     fun getPosition(location: Location): Double = ((
             `Xb^2 - Xe^2` +
-            `Yb^2 - Ye^2` +
-            `Zb^2 - Ze^2` +
-            `2(Xe - Xb)` * location.x +
-            `2(Ye - Yb)` * location.y +
-            `2(Ze - Zb)` * location.z
+                    `Yb^2 - Ye^2` +
+                    `Zb^2 - Ze^2` +
+                    `2(Xe - Xb)` * location.x +
+                    `2(Ye - Yb)` * location.y +
+                    `2(Ze - Zb)` * location.z
             ) / doubleSectionLength) + halfSectionLength
 
-    fun getDistanceSquared(location: Location): Double =
+    fun getDistanceSquared(location: Location, position: Double): Double =
         (beginPos.x - location.x).pow(2.0) +
-        (beginPos.y - location.y).pow(2.0) +
-        (beginPos.z - location.z).pow(2.0)
+                (beginPos.y - location.y).pow(2.0) +
+                (beginPos.z - location.z).pow(2.0) -
+                position.pow(2.0)
 }

@@ -2,6 +2,8 @@ package cn.xor7.map
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -13,6 +15,7 @@ object GameMap {
     private val sections = mutableMapOf<Int, MapSection>()
     private val lengthPrefixSum = mutableMapOf<Int, Double>()
     private val json = Json { prettyPrint = true }
+    var showingMapParticle = false
 
     init {
         try {
@@ -36,6 +39,20 @@ object GameMap {
     fun haveSection(sectionId: Int) = sections.containsKey(sectionId)
 
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
+
+    fun toggleMapParticle() {
+        if (showingMapParticle) {
+            sections.forEach { (_, section) ->
+                section.particle.turnOffTask()
+            }
+        } else {
+            sections.forEach { (_, section) ->
+                section.particle.alwaysShowAsync()
+            }
+        }
+        showingMapParticle = !showingMapParticle
+        Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道指示粒子"))
+    }
 
     fun loadMap() {
         sections.clear()

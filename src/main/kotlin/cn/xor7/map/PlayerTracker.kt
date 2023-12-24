@@ -23,13 +23,14 @@ class PlayerTracker internal constructor(val playerName: String) {
 
         if (!GameMap.haveSection(nowSectionId)) nowSectionId = 0
 
-        var minDistanceSquared = nowSection.getDistanceSquared(player.location)
+
         var nowSectionPosition = nowSection.getPosition(player.location)
+        var minDistanceSquared = nowSection.getDistanceSquared(player.location, nowSectionPosition)
         for (i in nowSectionId - 2..nowSectionId + 2) {
             if (i == nowSectionId) continue
             val section = GameMap.getSection(i) ?: continue
             val position = section.getPosition(player.location)
-            val distanceSquared = section.getDistanceSquared(player.location)
+            val distanceSquared = section.getDistanceSquared(player.location, position)
             if (distanceSquared < minDistanceSquared) {
                 nowSectionId = i
                 minDistanceSquared = distanceSquared
@@ -46,5 +47,7 @@ class PlayerTracker internal constructor(val playerName: String) {
         }
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
+        player.sendMessage("§a当前位置：${nowSectionId}段 ${nowPosition.toInt()}米")
+        player.sendMessage("§a当前距离平方：${minDistanceSquared.toInt()}")
     }
 }

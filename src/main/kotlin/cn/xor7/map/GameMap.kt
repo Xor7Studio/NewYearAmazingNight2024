@@ -10,6 +10,7 @@ import java.nio.file.Paths
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 object GameMap {
+    private const val MAP_DATA_FILE_NAME = ".nyan/map.json"
     internal val trackers = mutableMapOf<String, PlayerTracker>()
     internal val ranking = mutableListOf<PlayerTracker>()
     private val sections = mutableMapOf<Int, MapSection>()
@@ -72,10 +73,13 @@ object GameMap {
     fun loadMap() {
         sections.clear()
         lengthPrefixSum.clear()
-        val mapJsonFile = File("map.json")
-        if (!mapJsonFile.isFile) mapJsonFile.createNewFile()
+        val mapJsonFile = File(MAP_DATA_FILE_NAME)
+        if (!mapJsonFile.isFile) {
+            mapJsonFile.createNewFile()
+            mapJsonFile.writeText("{}")
+        }
         try {
-            val gameMapData = json.decodeFromString<GameMapData>(Files.readString(Paths.get("map.json")))
+            val gameMapData = json.decodeFromString<GameMapData>(Files.readString(Paths.get(MAP_DATA_FILE_NAME)))
             gameMapData.sections.forEach { (id, sectionData) ->
                 sections[id] = MapSection(sectionData)
             }

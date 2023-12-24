@@ -14,6 +14,17 @@ class ParticleCommand : BaseCommand() {
     @Default
     @Subcommand("all")
     fun toggleAllParticles() {
+        toggleMapParticle()
+        toggleRadiusParticle()
+    }
+
+    @Subcommand("map")
+    fun toggleMapParticle() {
         GameMap.toggleMapParticle()
+    }
+
+    @Subcommand("radius")
+    fun toggleRadiusParticle() {
+        GameMap.toggleRadiusParticle()
     }
 }

@@ -47,7 +47,5 @@ class PlayerTracker internal constructor(val playerName: String) {
         }
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
-        player.sendMessage("§a当前位置：${nowSectionId}段 ${nowPosition.toInt()}米")
-        player.sendMessage("§a当前距离平方：${minDistanceSquared.toInt()}")
     }
 }

@@ -5,6 +5,15 @@ import cn.xor7.command.ParticleCommand
 import cn.xor7.map.GameMap
 import cn.xor7.scoreboard.ScoreboardManager
 import co.aikar.commands.PaperCommandManager
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
@@ -12,6 +21,30 @@ import org.bukkit.scheduler.BukkitRunnable
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
+    private val apiServer = embeddedServer(Netty, 8080) {
+        setupApplication()
+    }.start(wait = false)
+
+    private fun Application.setupApplication() {
+        install(CORS) {
+            allowHeader(HttpHeaders.AccessControlAllowOrigin)
+            allowHeader(HttpHeaders.ContentType)
+            allowNonSimpleContentTypes = true
+            allowCredentials = true
+            allowSameOrigin = true
+            anyHost()
+        }
+
+        routing {
+            get("/game/ranking") {
+                call.respondText(
+                    text = Json.encodeToString(listOf("aaa","bbb","ccc")),
+                    contentType = ContentType.Application.Json
+                )
+            }
+        }
+    }
+
     override fun onEnable() {
         server.pluginManager.registerEvents(Listener(), this)
         commandManager = PaperCommandManager(this)
@@ -23,6 +56,10 @@ class NewYearAmazingNight : JavaPlugin() {
                 ScoreboardManager.updateScoreboard()
             }
         }.runTaskTimer(this, 0L, 20L)
+    }
+
+    override fun onDisable() {
+        apiServer.stop()
     }
 }
 

@@ -8,6 +8,9 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+@Volatile
+private var cacheData: String = "[]"
+
 fun main() {
     println("starting cache server...")
     embeddedServer(Netty, 8080) {
@@ -27,7 +30,10 @@ private fun Application.setupCacheServer() {
 
     routing {
         get("/") {
-            call.respondText("Hello, world!")
+            call.respondText(
+                text = cacheData,
+                contentType = ContentType.Application.Json
+            )
         }
     }
 }

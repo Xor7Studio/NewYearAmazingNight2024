@@ -1,5 +1,6 @@
 package cn.xor7
 
+import cn.zhxu.okhttps.HTTP
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -12,12 +13,15 @@ import kotlin.concurrent.scheduleAtFixedRate
 
 @Volatile
 private var cacheData: String = "[]"
+private val http = HTTP.builder().build()
 
 fun main() {
     println("starting cache server...")
 
     Timer("request", true).scheduleAtFixedRate(0, 1000) {
-        cacheData = "[]"
+        http.cancelAll()
+        cacheData = http.sync("http://localhost:8080/data").get().body.toString()
+        println(cacheData)
     }
 
     embeddedServer(Netty, 8080) {

@@ -3,6 +3,7 @@ package cn.xor7
 import cn.xor7.command.DevelopmentModeCommand
 import cn.xor7.command.ParticleCommand
 import cn.xor7.map.GameMap
+import cn.xor7.map.PlayerTrackerData
 import cn.xor7.scoreboard.ScoreboardManager
 import co.aikar.commands.PaperCommandManager
 import io.ktor.http.*
@@ -36,9 +37,16 @@ class NewYearAmazingNight : JavaPlugin() {
         }
 
         routing {
-            get("/game/ranking") {
+            get("/data") {
                 call.respondText(
-                    text = Json.encodeToString(listOf("aaa","bbb","ccc")),
+                    text = Json.encodeToString(
+                        run {
+                            val data = mutableListOf<PlayerTrackerData>()
+                            GameMap.trackers.forEach { (_, tracker) ->
+                                data += tracker.getData()
+                            }
+                            return@run data
+                        }),
                     contentType = ContentType.Application.Json
                 )
             }

@@ -48,4 +48,13 @@ class PlayerTracker internal constructor(val playerName: String) {
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
     }
+
+    fun getData(): PlayerTrackerData {
+        val player = Bukkit.getPlayer(playerName)!!
+        return PlayerTrackerData(
+            name = playerName,
+            location = SimpleLocation(player.location.x, player.location.y, player.location.z),
+            position = nowPosition,
+        )
+    }
 }

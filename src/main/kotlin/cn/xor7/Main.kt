@@ -16,7 +16,7 @@ private var cacheData: String = "[]"
 fun main() {
     println("starting cache server...")
 
-    Timer("request", true).scheduleAtFixedRate(5000, 0) {
+    Timer("request", true).scheduleAtFixedRate(0, 1000) {
         cacheData = "[]"
     }
 

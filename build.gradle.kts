@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.9.0"
     kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.0.0"
+    application
 }
 
 group = "cn.xor7"
@@ -34,6 +35,10 @@ dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation(kotlin("stdlib-jdk8"))
+}
+
+application {
+    mainClass.set("cn.xor7.MainKt")
 }
 
 tasks.withType<ShadowJar> {

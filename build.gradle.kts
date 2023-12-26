@@ -29,6 +29,7 @@ tasks.withType<KotlinCompile> {
 dependencies {
     compileOnly("top.leavesmc.leaves:leaves-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
+    implementation("cn.zhxu:okhttps:4.0.1")
     implementation("io.ktor:ktor-server-netty:2.3.7")
     implementation("io.ktor:ktor-server-cors:2.3.7")
     implementation("fr.mrmicky:fastboard:2.0.2")

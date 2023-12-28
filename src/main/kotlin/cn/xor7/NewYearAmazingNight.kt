@@ -39,14 +39,11 @@ class NewYearAmazingNight : JavaPlugin() {
         routing {
             get("/data") {
                 call.respondText(
-                    text = Json.encodeToString(
-                        run {
-                            val data = mutableListOf<PlayerTrackerData>()
-                            GameMap.trackers.forEach { (_, tracker) ->
-                                data += tracker.getData()
-                            }
-                            return@run data
-                        }),
+                    text = Json.encodeToString(mutableListOf<PlayerTrackerData>().apply {
+                        GameMap.trackers.forEach { (_, tracker) ->
+                            this += tracker.getData()
+                        }
+                    }),
                     contentType = ContentType.Application.Json
                 )
             }

@@ -1,11 +1,8 @@
 package cn.xor7
 
-import cn.xor7.command.DevelopmentModeCommand
-import cn.xor7.command.ParticleCommand
 import cn.xor7.map.GameMap
 import cn.xor7.map.PlayerTrackerData
 import cn.xor7.scoreboard.ScoreboardManager
-import co.aikar.commands.PaperCommandManager
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -21,7 +18,6 @@ import org.bukkit.scheduler.BukkitRunnable
 
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
-    private lateinit var commandManager: PaperCommandManager
     private val apiServer = embeddedServer(Netty, 8080) {
         setupApplication()
     }.start(wait = false)
@@ -52,9 +48,10 @@ class NewYearAmazingNight : JavaPlugin() {
 
     override fun onEnable() {
         server.pluginManager.registerEvents(Listener(), this)
-        commandManager = PaperCommandManager(this)
-        commandManager.registerCommand(DevelopmentModeCommand())
-        commandManager.registerCommand(ParticleCommand())
+        Command.register()
+        // commandManager = PaperCommandManager(this)
+        // commandManager.registerCommand(DevelopmentModeCommand())
+        // commandManager.registerCommand(ParticleCommand())
         object : BukkitRunnable() {
             override fun run() {
                 GameMap.tick()

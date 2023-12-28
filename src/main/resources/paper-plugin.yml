@@ -9,3 +9,6 @@ dependencies:
     ParticleLib:
       load: BEFORE
       required: true
+    CommandAPI:
+      load: BEFORE
+      required: true

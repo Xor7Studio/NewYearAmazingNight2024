@@ -9,7 +9,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate")
 object GameMap {
     private const val MAP_DATA_FILE_NAME = ".nyan/map.json"
     internal val trackers = mutableMapOf<String, PlayerTracker>()

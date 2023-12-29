@@ -34,7 +34,7 @@ import kotlin.math.sqrt
  *                      B
  * P(Xp,Yp,Zp),H(Xh, Yh, Zh),B(Xb, Yb, Zb),E(Xe, Ye, Ze)
  */
-@Suppress("PrivatePropertyName", "MemberVisibilityCanBePrivate", "CanBeParameter")
+@Suppress("PrivatePropertyName", "MemberVisibilityCanBePrivate")
 class MapSection(private val data: MapSectionData) {
     val beginPos = data.beginPos
     val endPos = data.endPos

@@ -7,15 +7,16 @@ import org.bukkit.Bukkit
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 object GameMap {
     private const val MAP_DATA_FILE_NAME = ".nyan/map.json"
     internal val trackers = mutableMapOf<String, PlayerTracker>()
     internal val ranking = mutableListOf<PlayerTracker>()
-    private val sections = mutableMapOf<Int, MapSection>()
-    private val lengthPrefixSum = mutableMapOf<Int, Double>()
+    private val sections = ConcurrentHashMap<Int, MapSection>()
     private val json = Json { prettyPrint = true }
+    private var lengthPrefixSum = mutableMapOf<Int, Double>()
     var showingMapParticle = false
     var showingRadiusParticle = false
 
@@ -40,9 +41,15 @@ object GameMap {
 
     fun haveSection(sectionId: Int) = sections.containsKey(sectionId)
 
+    fun setSection(sectionId: Int, section: MapSection) {
+        sections[sectionId] = section
+        calcLengthPrefixSum()
+        saveMap()
+    }
+
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 
-    fun toggleMapParticle() {
+    fun toggleMapParticle(broadcast: Boolean = true) {
         if (showingMapParticle) {
             sections.forEach { (_, section) ->
                 section.mapParticle.turnOffTask()
@@ -53,10 +60,11 @@ object GameMap {
             }
         }
         showingMapParticle = !showingMapParticle
+        if(!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道路线指示粒子"))
     }
 
-    fun toggleRadiusParticle() {
+    fun toggleRadiusParticle(broadcast: Boolean = true) {
         if (showingRadiusParticle) {
             sections.forEach { (_, section) ->
                 section.tunOffRadiusParticleTask()
@@ -67,6 +75,7 @@ object GameMap {
             }
         }
         showingRadiusParticle = !showingRadiusParticle
+        if(!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingRadiusParticle) "开启" else "关闭"}赛道半径指示粒子"))
     }
 
@@ -83,13 +92,28 @@ object GameMap {
             gameMapData.sections.forEach { (id, sectionData) ->
                 sections[id] = MapSection(sectionData)
             }
-            sections.forEach { (id, section) ->
-                lengthPrefixSum[id] = (lengthPrefixSum[id - 1] ?: 0.0) + section.sectionLength
-            }
+            calcLengthPrefixSum()
             mapJsonFile.writeText(json.encodeToString(gameMapData))
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun calcLengthPrefixSum() {
+        val prefixSum = mutableMapOf<Int, Double>()
+        sections.forEach { (id, section) ->
+            prefixSum[id] = (prefixSum[id - 1] ?: 0.0) + section.sectionLength
+        }
+        lengthPrefixSum = prefixSum
+    }
+
+    fun saveMap() {
+        val mapJsonFile = File(MAP_DATA_FILE_NAME)
+        if (!mapJsonFile.isFile) {
+            mapJsonFile.createNewFile()
+            mapJsonFile.writeText("{}")
+        }
+        mapJsonFile.writeText(json.encodeToString(GameMapData(sections.mapValues { (_, section) -> section.getData() })))
     }
 
     fun MutableList<PlayerTracker>.insertionSort(compare: Comparator<PlayerTracker>) {

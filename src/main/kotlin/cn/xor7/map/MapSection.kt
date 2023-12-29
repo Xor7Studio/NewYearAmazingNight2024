@@ -103,6 +103,8 @@ class MapSection(private val data: MapSectionData) {
         }
     }
 
+    fun getData() = data
+
     fun showRadiusParticle() {
         tunOffRadiusParticleTask()
 

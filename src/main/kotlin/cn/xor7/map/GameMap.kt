@@ -41,6 +41,8 @@ object GameMap {
 
     fun haveSection(sectionId: Int) = sections.containsKey(sectionId)
 
+    fun sectionCount() = sections.size
+
     fun setSection(sectionId: Int, section: MapSection) {
         sections[sectionId] = section
         calcLengthPrefixSum()

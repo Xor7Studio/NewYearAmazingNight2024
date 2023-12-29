@@ -40,7 +40,7 @@ class PlayerTracker internal constructor(val playerName: String) {
             }
         }
 
-        if (!developmentMode && minDistanceSquared > nowSection.radiusSquared) player.sendToSpawnPoint()
+        if (!developmentMode && minDistanceSquared > nowSection.radiusSquared) player.sendToSpawnPoint() //TODO 同时设置nowSectionId
 
         nowSectionPosition = when {
             nowSectionPosition > nowSection.sectionLength -> nowSection.sectionLength

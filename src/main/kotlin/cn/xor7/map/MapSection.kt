@@ -43,10 +43,9 @@ class MapSection(private val data: MapSectionData) {
     val sectionLength = sqrt(
         (beginPos.x - endPos.x).pow(2.0) + (beginPos.y - endPos.y).pow(2.0) + (beginPos.z - endPos.z).pow(2.0)
     )
-    val mapParticle: ParticleObject = run {
-        val line = Line(beginPos.toLocation(), endPos.toLocation())
-        line.period = 1L
-        return@run line
+    val mapParticle: ParticleObject = Line(beginPos.toLocation(), endPos.toLocation()).apply {
+        period = 1L
+        step = 0.5
     }
 
     private lateinit var radiusParticleTask: BukkitTask
@@ -64,7 +63,7 @@ class MapSection(private val data: MapSectionData) {
         var i = 0
         while (y < sectionLength) {
             val rad = Math.toRadians(i.toDouble())
-            y += 0.01
+            y += 0.1
             val x = cos(rad) * radius
             val z = sin(rad) * radius
             locations.add(projector.apply(x, y, z))

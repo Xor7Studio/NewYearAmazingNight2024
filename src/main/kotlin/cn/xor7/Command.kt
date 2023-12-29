@@ -47,6 +47,7 @@ object Command {
                             val radius = (commandArguments["radius"] as Int).toDouble()
                             GameMap.toggleRadiusParticle(false)
                             GameMap.setSection(sectionId, MapSection(section.getData().copy(radius = radius)))
+                            commandExecutor.sendMessage("§a已将赛段 $sectionId 的半径设置为 $radius")
                             GameMap.toggleRadiusParticle(false)
                         }
                     }

@@ -12,3 +12,5 @@ data class SimpleLocation(
 ) {
     fun toLocation() = Location(Bukkit.getWorlds()[0], x, y, z)
 }
+
+fun Location.toSimpleLocation() = SimpleLocation(x, y, z)

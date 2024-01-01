@@ -1,6 +1,5 @@
 package cn.xor7.map
 
-import cn.xor7.sendToSpawnPoint
 import org.bukkit.Bukkit
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -27,20 +26,33 @@ class PlayerTracker internal constructor(val playerName: String) {
 
 
         var nowSectionPosition = nowSection.getPosition(player.location)
-        var minDistanceSquared = nowSection.getDistanceSquared(player.location, nowSectionPosition)
+        var nowDistanceToBeginPointSquared = nowSection.getDistanceToBeginPointSquared(player.location)
+        var minDistanceSquared = nowSection.getDistanceSquared(nowDistanceToBeginPointSquared, nowSectionPosition)
         for (i in nowSectionId - 2..nowSectionId + 2) {
             if (i == nowSectionId) continue
             val section = GameMap.getSection(i) ?: continue
             val position = section.getPosition(player.location)
-            val distanceSquared = section.getDistanceSquared(player.location, position)
+            val distanceToBeginPointSquared = section.getDistanceToBeginPointSquared(player.location)
+            val distanceSquared = section.getDistanceSquared(distanceToBeginPointSquared, position)
             if (distanceSquared < minDistanceSquared) {
                 nowSectionId = i
+                nowDistanceToBeginPointSquared = distanceToBeginPointSquared
                 minDistanceSquared = distanceSquared
                 nowSectionPosition = position
             }
         }
 
-        if (!developmentMode && minDistanceSquared > nowSection.radiusSquared) player.sendToSpawnPoint() //TODO 同时设置nowSectionId
+        if (!developmentMode &&
+            (minDistanceSquared > nowSection.radiusSquared ||
+                    (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared))
+        ) {
+            nowSectionId = GameMap.playerSpawnInfo[playerName]?.second ?: 0
+            player.teleport(
+                GameMap.playerSpawnInfo[player.name]?.first
+                    ?: player.bedSpawnLocation
+                    ?: player.world.spawnLocation
+            )
+        }
 
         nowSectionPosition = when {
             nowSectionPosition > nowSection.sectionLength -> nowSection.sectionLength

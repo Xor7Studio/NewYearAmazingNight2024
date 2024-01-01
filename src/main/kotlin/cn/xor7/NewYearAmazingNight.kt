@@ -12,7 +12,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -49,9 +48,6 @@ class NewYearAmazingNight : JavaPlugin() {
     override fun onEnable() {
         server.pluginManager.registerEvents(Listener(), this)
         Command.register()
-        // commandManager = PaperCommandManager(this)
-        // commandManager.registerCommand(DevelopmentModeCommand())
-        // commandManager.registerCommand(ParticleCommand())
         object : BukkitRunnable() {
             override fun run() {
                 GameMap.tick()
@@ -62,21 +58,5 @@ class NewYearAmazingNight : JavaPlugin() {
 
     override fun onDisable() {
         apiServer.stop()
-    }
-}
-
-fun Player.sendToSpawnPoint() {
-    this.teleport(this.bedSpawnLocation ?: this.world.spawnLocation)
-}
-
-fun Player.toggleDevelopmentMode(): Boolean {
-    return if (GameMap.trackers[this.name]!!.developmentMode) {
-        GameMap.trackers[this.name]!!.developmentMode = false
-        this.sendMessage("§a已关闭开发者模式")
-        false
-    } else {
-        GameMap.trackers[this.name]!!.developmentMode = true
-        this.sendMessage("§a已开启开发者模式")
-        true
     }
 }

@@ -4,6 +4,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -19,6 +20,7 @@ object GameMap {
     private var lengthPrefixSum = mutableMapOf<Int, Double>()
     var showingMapParticle = false
     var showingRadiusParticle = false
+    val playerSpawnInfo = mutableMapOf<String, Pair<Location, Int>>()
 
     init {
         try {
@@ -62,7 +64,7 @@ object GameMap {
             }
         }
         showingMapParticle = !showingMapParticle
-        if(!broadcast) return
+        if (!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道路线指示粒子"))
     }
 
@@ -77,7 +79,7 @@ object GameMap {
             }
         }
         showingRadiusParticle = !showingRadiusParticle
-        if(!broadcast) return
+        if (!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingRadiusParticle) "开启" else "关闭"}赛道半径指示粒子"))
     }
 

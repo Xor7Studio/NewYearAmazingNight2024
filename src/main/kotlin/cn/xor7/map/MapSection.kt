@@ -89,11 +89,12 @@ class MapSection(private val data: MapSectionData) {
                     `2(Ze - Zb)` * location.z
             ) / doubleSectionLength) + halfSectionLength
 
-    fun getDistanceSquared(location: Location, position: Double): Double =
+    fun getDistanceToBeginPointSquared(location: Location): Double =
         (beginPos.x - location.x).pow(2.0) +
                 (beginPos.y - location.y).pow(2.0) +
-                (beginPos.z - location.z).pow(2.0) -
-                position.pow(2.0)
+                (beginPos.z - location.z).pow(2.0)
+
+    fun getDistanceSquared(distanceToBeginPointSquared: Double, position: Double): Double = distanceToBeginPointSquared - position.pow(2.0)
 
     fun tunOffRadiusParticleTask() {
         if (::radiusParticleTask.isInitialized) {

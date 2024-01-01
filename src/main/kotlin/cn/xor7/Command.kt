@@ -11,7 +11,14 @@ object Command {
             withAliases("dev")
             playerArgument("player", optional = true) {
                 playerExecutor { sender, args ->
-                    (args.getOptional("player").orElse(sender) as Player).toggleDevelopmentMode()
+                    val player = args.getOptional("player").orElse(sender) as Player
+                    if (GameMap.trackers[player.name]!!.developmentMode) {
+                        GameMap.trackers[player.name]!!.developmentMode = false
+                        player.sendMessage("§a已关闭开发者模式")
+                    } else {
+                        GameMap.trackers[player.name]!!.developmentMode = true
+                        player.sendMessage("§a已开启开发者模式")
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
-class Listener : Listener {
+object Listener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         ScoreboardManager.setScoreboard(event.player)

@@ -14,8 +14,8 @@ import kotlin.concurrent.scheduleAtFixedRate
 
 @Volatile
 private var cacheData: String = "[]"
-private val http = HTTP.builder().build()
-private val url = File("API_URL").readText()
+private val http by lazy { HTTP.builder().build()}
+private val url by lazy { File("API_URL").readText() }
 
 fun main() {
     println("starting cache server...")

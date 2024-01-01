@@ -46,7 +46,7 @@ class NewYearAmazingNight : JavaPlugin() {
     }
 
     override fun onEnable() {
-        server.pluginManager.registerEvents(Listener(), this)
+        server.pluginManager.registerEvents(Listener, this)
         Command.register()
         object : BukkitRunnable() {
             override fun run() {

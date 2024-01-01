@@ -1,4 +1,4 @@
 package cn.xor7.item
 
-object ToggleVisibleItem {
+object ToggleVisibleItem : FunctionalItem{
 }

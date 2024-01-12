@@ -12,6 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -59,4 +60,12 @@ class NewYearAmazingNight : JavaPlugin() {
     override fun onDisable() {
         apiServer.stop()
     }
+}
+
+fun Player.sendToSpawnPoint() {
+    teleport(
+        GameMap.playerSpawnInfo[name]?.first
+            ?: bedSpawnLocation
+            ?: world.spawnLocation
+    )
 }

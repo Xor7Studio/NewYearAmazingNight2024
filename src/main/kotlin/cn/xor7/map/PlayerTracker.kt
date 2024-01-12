@@ -1,5 +1,6 @@
 package cn.xor7.map
 
+import cn.xor7.sendToSpawnPoint
 import org.bukkit.Bukkit
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -47,11 +48,7 @@ class PlayerTracker internal constructor(val playerName: String) {
                     (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared))
         ) {
             nowSectionId = GameMap.playerSpawnInfo[playerName]?.second ?: 0
-            player.teleport(
-                GameMap.playerSpawnInfo[player.name]?.first
-                    ?: player.bedSpawnLocation
-                    ?: player.world.spawnLocation
-            )
+            player.sendToSpawnPoint()
         }
 
         nowSectionPosition = when {

@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -37,5 +38,20 @@ object Listener : Listener {
 
             else -> return
         }
+    }
+
+    @EventHandler
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val item = event.item ?: return
+        val player = event.player
+        when (item.type) {
+            Material.BLAZE_ROD -> player.sendToSpawnPoint()
+
+            else -> {
+                // Other logic
+                return
+            }
+        }
+        event.isCancelled = true
     }
 }

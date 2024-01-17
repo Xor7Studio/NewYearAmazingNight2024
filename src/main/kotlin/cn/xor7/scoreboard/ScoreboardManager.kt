@@ -1,5 +1,6 @@
 package cn.xor7.scoreboard
 
+import cn.xor7.getTracker
 import fr.mrmicky.fastboard.FastBoard
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,8 +25,18 @@ object ScoreboardManager {
 
     fun updateScoreboard() {
         scoreboards.forEach { (player, scoreboard) ->
-            scoreboard.updateLines(scoreboardData.lines.map { line ->
+            scoreboard.updateLines(run {
+                if (player.getTracker()!!.developmentMode)
+                    scoreboardData.devLines
+                else
+                    scoreboardData.lines
+            }.map { line ->
+                val tracker = player.getTracker()!!
                 line.replace("%player%", player.name)
+                    .replace("%section%", tracker.nowSectionId.toString())
+                    .replace("%position%", tracker.nowPosition.toString())
+                    .replace("%section_position%", tracker.nowSectionPosition.toString())
+                    .replace("%section_distance%", tracker.nowSectionDistanceSquared.toString())
             })
         }
     }

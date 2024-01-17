@@ -5,19 +5,26 @@ import org.bukkit.Bukkit
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
-    var nowSectionId: Int = 0
-        private set(newValue) {
+    var nowSectionId = 0
+        internal set(newValue) {
             field = newValue
             nowSection = GameMap.getSection(newValue)!!
         }
 
-    var nowSection: MapSection = GameMap.getSection(0)!!
+    var nowSection = GameMap.getSection(0)!!
         private set
-    var nowPosition: Double = 0.0
+    var nowPosition = 0.0
+        private set
+    var nowSectionPosition = 0.0
+        private set
+    var nowSectionDistanceSquared = 0.0
         private set
 
     var developmentMode = false
     var nowLocation = SimpleLocation(0.0, 0.0, 0.0)
+
+    @Volatile
+    var invincible = false
 
     fun trackNowSection() {
         val player = Bukkit.getPlayer(playerName) ?: return
@@ -35,7 +42,7 @@ class PlayerTracker internal constructor(val playerName: String) {
             val position = section.getPosition(player.location)
             val distanceToBeginPointSquared = section.getDistanceToBeginPointSquared(player.location)
             val distanceSquared = section.getDistanceSquared(distanceToBeginPointSquared, position)
-            if (distanceSquared < minDistanceSquared) {
+            if (distanceSquared < minDistanceSquared && position > -1) {
                 nowSectionId = i
                 nowDistanceToBeginPointSquared = distanceToBeginPointSquared
                 minDistanceSquared = distanceSquared
@@ -44,8 +51,8 @@ class PlayerTracker internal constructor(val playerName: String) {
         }
 
         if (!developmentMode &&
-            (minDistanceSquared > nowSection.radiusSquared ||
-                    (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared))
+            (minDistanceSquared > nowSection.radiusSquared
+                    || (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared))
         ) {
             nowSectionId = GameMap.playerSpawnInfo[playerName]?.second ?: 0
             player.sendToSpawnPoint()
@@ -56,6 +63,9 @@ class PlayerTracker internal constructor(val playerName: String) {
             nowSectionPosition < 0 -> 0.0
             else -> nowSectionPosition
         }
+
+        this.nowSectionPosition = nowSectionPosition
+        nowSectionDistanceSquared = minDistanceSquared
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
     }

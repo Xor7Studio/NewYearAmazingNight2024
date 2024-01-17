@@ -4,15 +4,19 @@ import cn.xor7.map.GameMap
 import cn.xor7.map.PlayerTracker
 import cn.xor7.scoreboard.ScoreboardManager
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 object Listener : Listener {
+    private val hideOtherPlayer = mutableMapOf<String, Boolean>()
+
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         ScoreboardManager.setScoreboard(event.player)
@@ -27,11 +31,12 @@ object Listener : Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
-        val tracker = GameMap.trackers[event.player.name] ?: return
+        val tracker = event.player.getTracker() ?: return
         val blockPos = event.to.toBlockLocation().subtract(0.0, 1.0, 0.0)
         val block = blockPos.block
         when (block.type) {
             Material.GOLD_BLOCK -> {
+                event.player.setBedSpawnLocation(event.player.location, true)
                 GameMap.playerSpawnInfo[tracker.playerName] = Pair(event.player.location, tracker.nowSectionId)
                 event.player.sendActionBar(Component.text("§b§l已设置重生点"))
             }
@@ -46,12 +51,28 @@ object Listener : Listener {
         val player = event.player
         when (item.type) {
             Material.BLAZE_ROD -> player.sendToSpawnPoint()
+            Material.ENDER_EYE -> {
+                if (hideOtherPlayer[player.name] == false) {
+                    hideOtherPlayer[player.name] = true
+                    Bukkit.getOnlinePlayers().forEach { player.hidePlayer(instance, it) }
+                    player.sendMessage("§a已隐藏其他玩家")
+                } else {
+                    hideOtherPlayer[player.name] = false
+                    Bukkit.getOnlinePlayers().forEach { player.showPlayer(instance, it) }
+                    player.sendMessage("§a已显示其他玩家")
+                }
+            }
 
             else -> {
-                // Other logic
                 return
             }
         }
-        event.isCancelled = true
+    }
+
+    @EventHandler
+    fun onEntityDamage(event: EntityDamageEvent) {
+        if (event.entity !is org.bukkit.entity.Player) return
+        val player = event.entity as org.bukkit.entity.Player
+        if (player.getTracker()?.invincible == true) event.isCancelled = true
     }
 }

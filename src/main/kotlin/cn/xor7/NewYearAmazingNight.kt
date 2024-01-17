@@ -16,6 +16,8 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
+val instance by lazy { JavaPlugin.getPlugin(NewYearAmazingNight::class.java) }
+
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
     private val apiServer = embeddedServer(Netty, 8080) {
@@ -63,9 +65,26 @@ class NewYearAmazingNight : JavaPlugin() {
 }
 
 fun Player.sendToSpawnPoint() {
+    getTracker()!!.apply {
+        nowSectionId = GameMap.playerSpawnInfo[name]?.second ?: 0
+        invincible = true
+        instance.runLater(20L) {
+            invincible = false
+        }
+    }
     teleport(
         GameMap.playerSpawnInfo[name]?.first
             ?: bedSpawnLocation
             ?: world.spawnLocation
     )
+}
+
+fun Player.getTracker() = GameMap.trackers[name]
+
+fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
+    object : BukkitRunnable() {
+        override fun run() {
+            this.task()
+        }
+    }.runTaskLater(this, delay)
 }

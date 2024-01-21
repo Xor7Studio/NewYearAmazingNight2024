@@ -1,5 +1,6 @@
 package cn.xor7
 
+import cn.xor7.gravel.GravelManager
 import cn.xor7.map.*
 import dev.jorel.commandapi.kotlindsl.*
 import org.bukkit.entity.Player
@@ -7,7 +8,18 @@ import org.bukkit.entity.Player
 object Command {
     @Suppress("DuplicatedCode")
     fun register() {
+        commandTree("state") {
+            withPermission("nyan.state")
+            literalArgument("gravel") {
+                booleanArgument("state") {
+                    anyExecutor { _, args ->
+                        GravelManager.pass = args.get("state") as Boolean
+                    }
+                }
+            }
+        }
         commandTree("development") {
+            withPermission("nyan.dev")
             withAliases("dev")
             playerArgument("player", optional = true) {
                 playerExecutor { sender, args ->
@@ -23,6 +35,7 @@ object Command {
             }
         }
         commandTree("toggle-particle") {
+            withPermission("nyan.particle")
             withAliases("p")
             literalArgument("all") {
                 anyExecutor { _, _ ->
@@ -42,6 +55,7 @@ object Command {
             }
         }
         commandTree("edit") {
+            withPermission("nyan.edit")
             literalArgument("radius") {
                 integerArgument("section") {
                     doubleArgument("radius") {

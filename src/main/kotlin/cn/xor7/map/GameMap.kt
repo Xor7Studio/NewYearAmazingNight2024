@@ -1,13 +1,12 @@
 package cn.xor7.map
 
+import cn.xor7.getOrCreateJsonFile
+import cn.xor7.readConfig
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -86,20 +85,12 @@ object GameMap {
     fun loadMap() {
         sections.clear()
         lengthPrefixSum.clear()
-        val mapJsonFile = File(MAP_DATA_FILE_NAME)
-        if (!mapJsonFile.isFile) {
-            mapJsonFile.createNewFile()
-            mapJsonFile.writeText("{}")
-        }
-        try {
-            val gameMapData = json.decodeFromString<GameMapData>(Files.readString(Paths.get(MAP_DATA_FILE_NAME)))
-            gameMapData.sections.forEach { (id, sectionData) ->
+
+        readConfig<GameMapData>(MAP_DATA_FILE_NAME) { data ->
+            data.sections.forEach { (id, sectionData) ->
                 sections[id] = MapSection(sectionData)
             }
             calcLengthPrefixSum()
-            mapJsonFile.writeText(json.encodeToString(gameMapData))
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -111,14 +102,16 @@ object GameMap {
         lengthPrefixSum = prefixSum
     }
 
-    fun saveMap() {
-        val mapJsonFile = File(MAP_DATA_FILE_NAME)
-        if (!mapJsonFile.isFile) {
-            mapJsonFile.createNewFile()
-            mapJsonFile.writeText("{}")
-        }
-        mapJsonFile.writeText(json.encodeToString(GameMapData(sections.mapValues { (_, section) -> section.getData() })))
-    }
+    fun saveMap() = getOrCreateJsonFile(MAP_DATA_FILE_NAME)
+        .writeText(
+            json.encodeToString(
+                GameMapData(
+                    sections.mapValues { (_, section) ->
+                        section.getData()
+                    }
+                )
+            )
+        )
 
     fun MutableList<PlayerTracker>.insertionSort(compare: Comparator<PlayerTracker>) {
         for (i in 1 until size) {

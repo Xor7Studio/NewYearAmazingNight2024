@@ -42,7 +42,7 @@ class PlayerTracker internal constructor(val playerName: String) {
             val position = section.getPosition(player.location)
             val distanceToBeginPointSquared = section.getDistanceToBeginPointSquared(player.location)
             val distanceSquared = section.getDistanceSquared(distanceToBeginPointSquared, position)
-            if (distanceSquared < minDistanceSquared && position > -1) {
+            if (distanceSquared < minDistanceSquared && position in 0.0..section.sectionLength) {
                 nowSectionId = i
                 nowDistanceToBeginPointSquared = distanceToBeginPointSquared
                 minDistanceSquared = distanceSquared

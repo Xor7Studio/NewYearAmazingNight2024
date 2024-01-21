@@ -1,7 +1,9 @@
 package cn.xor7
 
 import cn.xor7.map.GameMap
+import cn.xor7.map.MapListener
 import cn.xor7.map.PlayerTrackerData
+import cn.xor7.pearl.PearlListener
 import cn.xor7.scoreboard.ScoreboardManager
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -49,7 +51,8 @@ class NewYearAmazingNight : JavaPlugin() {
     }
 
     override fun onEnable() {
-        server.pluginManager.registerEvents(Listener, this)
+        server.pluginManager.registerEvents(MapListener, this)
+        server.pluginManager.registerEvents(PearlListener, this)
         Command.register()
         object : BukkitRunnable() {
             override fun run() {

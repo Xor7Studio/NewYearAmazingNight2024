@@ -1,8 +1,9 @@
-package cn.xor7
+package cn.xor7.map
 
-import cn.xor7.map.GameMap
-import cn.xor7.map.PlayerTracker
+import cn.xor7.getTracker
+import cn.xor7.instance
 import cn.xor7.scoreboard.ScoreboardManager
+import cn.xor7.sendToSpawnPoint
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -14,7 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
-object Listener : Listener {
+object MapListener : Listener {
     private val hideOtherPlayer = mutableMapOf<String, Boolean>()
 
     @EventHandler

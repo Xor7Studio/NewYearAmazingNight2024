@@ -1,6 +1,8 @@
 package cn.xor7.map
 
 import cn.xor7.getTracker
+import cn.xor7.gravel.GravelManager
+import cn.xor7.gravel.GravelManager.canPassGravelSection
 import cn.xor7.instance
 import cn.xor7.scoreboard.ScoreboardManager
 import cn.xor7.sendToSpawnPoint
@@ -20,10 +22,12 @@ object MapListener : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        ScoreboardManager.setScoreboard(event.player)
-        if (GameMap.trackers.containsKey(event.player.name)) return
-        val tracker = PlayerTracker(event.player.name)
-        GameMap.trackers[event.player.name] = tracker
+        val player = event.player
+        ScoreboardManager.setScoreboard(player)
+        if (GameMap.trackers.containsKey(player.name)) return
+        player.teleport(player.world.spawnLocation)
+        val tracker = PlayerTracker(player.name)
+        GameMap.trackers[player.name] = tracker
         GameMap.ranking.add(tracker)
     }
 
@@ -32,14 +36,30 @@ object MapListener : Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
-        val tracker = event.player.getTracker() ?: return
+        val player = event.player
+        val tracker = player.getTracker() ?: return
         val blockPos = event.to.toBlockLocation().subtract(0.0, 1.0, 0.0)
         val block = blockPos.block
+
+        if (player.name == GravelManager.getTargetPlayerName() &&
+            tracker.nowSectionId > GravelManager.getTargetSectionId()
+        ) GravelManager.pass = true
+
         when (block.type) {
             Material.GOLD_BLOCK -> {
-                event.player.setBedSpawnLocation(event.player.location, true)
-                GameMap.playerSpawnInfo[tracker.playerName] = Pair(event.player.location, tracker.nowSectionId)
-                event.player.sendActionBar(Component.text("§b§l已设置重生点"))
+                player.setBedSpawnLocation(player.location, true)
+                GameMap.playerSpawnInfo[tracker.playerName] = Pair(player.location, tracker.nowSectionId)
+                player.sendActionBar(Component.text("§b§l已设置重生点"))
+            }
+
+            Material.GRAVEL -> {
+                if (GravelManager.getTargetSectionId() != tracker.nowSectionId) return
+                player.sendToSpawnPoint()
+            }
+
+            Material.SUSPICIOUS_GRAVEL -> {
+                if (GravelManager.getTargetSectionId() != tracker.nowSectionId) return
+                if (!player.canPassGravelSection()) player.sendToSpawnPoint()
             }
 
             else -> return

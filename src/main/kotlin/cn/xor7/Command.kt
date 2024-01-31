@@ -3,10 +3,10 @@ package cn.xor7
 import cn.xor7.gravel.GravelManager
 import cn.xor7.map.*
 import dev.jorel.commandapi.kotlindsl.*
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object Command {
-    @Suppress("DuplicatedCode")
     fun register() {
         commandTree("state") {
             withPermission("nyan.state")
@@ -86,24 +86,14 @@ object Command {
                             GameMap.toggleMapParticle(false)
                             GameMap.toggleRadiusParticle(false)
                             if (firstSectionId >= 0) {
-                                val firstSection = GameMap.getSection(firstSectionId) ?: run {
-                                    commandExecutor.sendMessage("§c赛段 $firstSectionId 不存在")
-                                    GameMap.toggleMapParticle(false)
-                                    GameMap.toggleRadiusParticle(false)
-                                    return@anyExecutor
-                                }
+                                val firstSection = mapSection(firstSectionId, commandExecutor) ?: return@anyExecutor
                                 firstSection.tunOffRadiusParticleTask()
                                 GameMap.setSection(
                                     firstSectionId,
                                     MapSection(firstSection.getData().copy(endPos = location))
                                 )
                             }
-                            val secondSection = GameMap.getSection(secondSectionId) ?: run {
-                                commandExecutor.sendMessage("§c赛段 $secondSectionId 不存在")
-                                GameMap.toggleMapParticle(false)
-                                GameMap.toggleRadiusParticle(false)
-                                return@anyExecutor
-                            }
+                            val secondSection = mapSection(secondSectionId, commandExecutor) ?: return@anyExecutor
                             secondSection.tunOffRadiusParticleTask()
                             GameMap.setSection(
                                 secondSectionId,
@@ -135,5 +125,15 @@ object Command {
                 }
             }
         }
+    }
+
+    private fun mapSection(
+        firstSectionId: Int,
+        commandExecutor: CommandSender,
+    ): MapSection? = GameMap.getSection(firstSectionId) ?: run {
+        commandExecutor.sendMessage("§c赛段 $firstSectionId 不存在")
+        GameMap.toggleMapParticle(false)
+        GameMap.toggleRadiusParticle(false)
+        return null
     }
 }

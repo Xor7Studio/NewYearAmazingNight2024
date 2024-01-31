@@ -3,6 +3,7 @@ package cn.xor7
 import cn.xor7.gravel.GravelManager
 import cn.xor7.map.*
 import dev.jorel.commandapi.kotlindsl.*
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -80,8 +81,8 @@ object Command {
                         anyExecutor { commandExecutor, commandArguments ->
                             val secondSectionId = commandArguments["point"] as Int
                             val firstSectionId = secondSectionId - 1
-                            val location = (commandArguments["location"] as org.bukkit.Location).toSimpleLocation()
-                            println(commandArguments["location"] as org.bukkit.Location)
+                            val location = (commandArguments["location"] as Location).toSimpleLocation()
+                            println(commandArguments["location"] as Location)
                             println(location)
                             GameMap.toggleMapParticle(false)
                             GameMap.toggleRadiusParticle(false)
@@ -106,13 +107,23 @@ object Command {
                     }
                 }
             }
+            literalArgument("split") {
+                integerArgument("section") {
+                    locationArgument("point") {
+                        anyExecutor { _, commandArguments ->
+                            val middlePoint = (commandArguments["point"] as Location).toSimpleLocation()
+                            val firstSection = commandArguments["section"]
+                        }
+                    }
+                }
+            }
             literalArgument("create") {
                 locationArgument("endPos") {
                     doubleArgument("radius") {
                         anyExecutor { commandExecutor, commandArguments ->
                             GameMap.toggleMapParticle(false)
                             GameMap.toggleRadiusParticle(false)
-                            val endPos = (commandArguments["endPos"] as org.bukkit.Location).toSimpleLocation()
+                            val endPos = (commandArguments["endPos"] as Location).toSimpleLocation()
                             val radius = commandArguments["radius"] as Double
                             val sectionId = GameMap.sectionCount()
                             val lastPoint = GameMap.getSection(sectionId - 1)?.endPos ?: SimpleLocation(0.0, 0.0, 0.0)

@@ -14,6 +14,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
@@ -22,7 +24,7 @@ val instance by lazy { JavaPlugin.getPlugin(NewYearAmazingNight::class.java) }
 
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
-    private val apiServer = embeddedServer(Netty, 8080) {
+    private val apiServer = embeddedServer(Netty, 8000) {
         setupApplication()
     }.start(wait = false)
 
@@ -91,3 +93,5 @@ fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
         }
     }.runTaskLater(this, delay)
 }
+
+fun Component.legacyText() = LegacyComponentSerializer.legacyAmpersand().serialize(this)

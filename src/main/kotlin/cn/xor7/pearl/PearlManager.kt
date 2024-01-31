@@ -22,6 +22,8 @@ object PearlManager {
         }
     }
 
+    fun allowedSectionsContains(section: MapSection) = allowedSections.contains(section)
+
     fun inAllowedLocation(loc: Location): Boolean {
         if (!configData.clearTransgressivePearls) return true
         if (allowedSections.isEmpty()) return true

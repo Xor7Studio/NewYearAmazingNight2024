@@ -8,9 +8,8 @@ import org.bukkit.event.player.PlayerTeleportEvent
 
 object PearlListener : Listener {
     @EventHandler
-    fun onPearlFly(event: EntityMoveEvent) {
+    fun onPearlFly(event: EntityMoveEvent) { // 哦这并不会工作
         if (event.entity.type != EntityType.ENDER_PEARL) return
-        println(event.to)
         if(!PearlManager.inAllowedLocation(event.to)) event.entity.remove()
     }
 

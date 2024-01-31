@@ -1,7 +1,14 @@
 package cn.xor7.map
 
+import cn.xor7.legacyText
+import cn.xor7.pearl.PearlManager
 import cn.xor7.sendToSpawnPoint
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
+
+private const val pearlName = "§a传送珍珠"
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
@@ -31,7 +38,6 @@ class PlayerTracker internal constructor(val playerName: String) {
         nowLocation = SimpleLocation(player.location.x, player.location.y, player.location.z)
 
         if (!GameMap.haveSection(nowSectionId)) nowSectionId = 0
-
 
         var nowSectionPosition = nowSection.getPosition(player.location)
         var nowDistanceToBeginPointSquared = nowSection.getDistanceToBeginPointSquared(player.location)
@@ -68,6 +74,22 @@ class PlayerTracker internal constructor(val playerName: String) {
         nowSectionDistanceSquared = minDistanceSquared
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
+
+        player.inventory.forEach {
+            if (it?.type == Material.ENDER_PEARL)
+                if (it.itemMeta.displayName()?.legacyText() == pearlName)
+                    player.inventory.removeItem(it)
+        }
+        if (PearlManager.allowedSectionsContains(nowSection)) run {
+            player.inventory.forEach {
+                if (it?.type == Material.ENDER_PEARL) return@run
+            }
+            player.inventory.addItem(ItemStack(Material.ENDER_PEARL, 1).apply {
+                itemMeta = itemMeta.apply {
+                    displayName(Component.text(pearlName))
+                }
+            })
+        }
     }
 
     fun getData(): PlayerTrackerData {

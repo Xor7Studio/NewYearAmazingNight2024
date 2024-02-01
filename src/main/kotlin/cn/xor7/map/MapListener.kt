@@ -84,9 +84,7 @@ object MapListener : Listener {
                 }
             }
 
-            else -> {
-                return
-            }
+            else -> return
         }
     }
 

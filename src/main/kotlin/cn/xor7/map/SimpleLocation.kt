@@ -14,3 +14,5 @@ data class SimpleLocation(
 }
 
 fun Location.toSimpleLocation() = SimpleLocation(x, y, z)
+
+fun SimpleLocation.toDebugText() = "(x: ${x}, y: ${y}, z: ${z})"

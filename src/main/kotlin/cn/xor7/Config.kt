@@ -25,6 +25,7 @@ inline fun <reified T> readConfig(path: String, beforeWrite: (data: T) -> Unit =
     }
     val data: T = json.decodeFromString<T>(Files.readString(Paths.get(path)))
     beforeWrite(data)
+    println(data.toString())
     configJsonFile.writeText(json.encodeToString(data))
     return data
 }

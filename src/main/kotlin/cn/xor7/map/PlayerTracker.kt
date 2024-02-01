@@ -1,14 +1,11 @@
 package cn.xor7.map
 
-import cn.xor7.legacyText
 import cn.xor7.pearl.PearlManager
 import cn.xor7.sendToSpawnPoint
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-
-private const val pearlName = "§a传送珍珠"
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
@@ -75,18 +72,17 @@ class PlayerTracker internal constructor(val playerName: String) {
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
 
-        player.inventory.forEach {
-            if (it?.type == Material.ENDER_PEARL)
-                if (it.itemMeta.displayName()?.legacyText() == pearlName)
-                    player.inventory.removeItem(it)
+        player.inventory.filter { it?.itemMeta?.isUnbreakable == true }.forEach {
+            when(it.type) {
+                Material.ENDER_PEARL -> player.inventory.removeItem(it)
+                else -> {}
+            }
         }
         if (PearlManager.allowedSectionsContains(nowSection)) run {
-            player.inventory.forEach {
-                if (it?.type == Material.ENDER_PEARL) return@run
-            }
             player.inventory.addItem(ItemStack(Material.ENDER_PEARL, 1).apply {
                 itemMeta = itemMeta.apply {
-                    displayName(Component.text(pearlName))
+                    displayName(Component.text("§a传送珍珠"))
+                    isUnbreakable = true
                 }
             })
         }

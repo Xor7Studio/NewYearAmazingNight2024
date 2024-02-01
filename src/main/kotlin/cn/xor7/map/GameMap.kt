@@ -7,14 +7,14 @@ import kotlinx.serialization.json.Json
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate")
 object GameMap {
     private const val MAP_DATA_FILE_NAME = ".nyan/map.json"
     internal val trackers = mutableMapOf<String, PlayerTracker>()
     internal val ranking = mutableListOf<PlayerTracker>()
-    private val sections = ConcurrentHashMap<Int, MapSection>()
+    private val sections = CopyOnWriteArrayList<MapSection>()
     private val json = Json { prettyPrint = true }
     private var lengthPrefixSum = mutableMapOf<Int, Double>()
     var showingMapParticle = false
@@ -38,49 +38,46 @@ object GameMap {
 
     fun getRanking() = ranking.toList()
 
-    fun getSection(sectionId: Int) = sections[sectionId]
+    fun getSection(sectionId: Int): MapSection? = sections.getOrNull(sectionId)
 
-    fun haveSection(sectionId: Int) = sections.containsKey(sectionId)
+    fun haveSection(sectionId: Int) = sections.size > sectionId
 
     fun sectionCount() = sections.size
 
     fun setSection(sectionId: Int, section: MapSection) {
-        sections[sectionId] = section
+        if(sectionId >= sections.size) sections.add(section)
+        else sections[sectionId] = section
+        calcLengthPrefixSum()
+        saveMap()
+    }
+
+    fun insertSection(sectionId: Int, section: MapSection) {
+        sections.add(sectionId, section)
         calcLengthPrefixSum()
         saveMap()
     }
 
     fun getLengthPrefixSum(sectionId: Int) = lengthPrefixSum[sectionId] ?: 0.0
 
-    fun toggleMapParticle(broadcast: Boolean = true) {
-        if (showingMapParticle) {
-            sections.forEach { (_, section) ->
-                section.mapParticle.turnOffTask()
-            }
-        } else {
-            sections.forEach { (_, section) ->
-                section.mapParticle.alwaysShowAsync()
-            }
-        }
+    fun toggleMapParticle() {
+        if (showingMapParticle) turnOffMapParticle() else turnOnMapParticle()
         showingMapParticle = !showingMapParticle
-        if (!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingMapParticle) "开启" else "关闭"}赛道路线指示粒子"))
     }
 
-    fun toggleRadiusParticle(broadcast: Boolean = true) {
-        if (showingRadiusParticle) {
-            sections.forEach { (_, section) ->
-                section.tunOffRadiusParticleTask()
-            }
-        } else {
-            sections.forEach { (_, section) ->
-                section.showRadiusParticle()
-            }
-        }
+    fun turnOffMapParticle() = sections.forEach { it.mapParticle.turnOffTask() }
+
+    fun turnOnMapParticle() = sections.forEach { it.mapParticle.alwaysShowAsync() }
+
+    fun toggleRadiusParticle() {
+        if (showingRadiusParticle) turnOffRadiusParticle() else turnOnRadiusParticle()
         showingRadiusParticle = !showingRadiusParticle
-        if (!broadcast) return
         Bukkit.broadcast(Component.text("§a已${if (showingRadiusParticle) "开启" else "关闭"}赛道半径指示粒子"))
     }
+
+    fun turnOnRadiusParticle() = sections.forEach { it.showRadiusParticle() }
+
+    fun turnOffRadiusParticle() = sections.forEach { it.tunOffRadiusParticleTask() }
 
     fun loadMap() {
         sections.clear()
@@ -88,7 +85,7 @@ object GameMap {
 
         readConfig<GameMapData>(MAP_DATA_FILE_NAME) { data ->
             data.sections.forEach { (id, sectionData) ->
-                sections[id] = MapSection(sectionData)
+                sections.add(id, MapSection(sectionData))
             }
             calcLengthPrefixSum()
         }
@@ -96,8 +93,8 @@ object GameMap {
 
     private fun calcLengthPrefixSum() {
         val prefixSum = mutableMapOf<Int, Double>()
-        sections.forEach { (id, section) ->
-            prefixSum[id] = (prefixSum[id - 1] ?: 0.0) + section.sectionLength
+        sections.forEachIndexed { index, mapSection ->
+            prefixSum[index] = (prefixSum[index - 1] ?: 0.0) + mapSection.sectionLength
         }
         lengthPrefixSum = prefixSum
     }
@@ -106,8 +103,10 @@ object GameMap {
         .writeText(
             json.encodeToString(
                 GameMapData(
-                    sections.mapValues { (_, section) ->
-                        section.getData()
+                    mutableMapOf<Int, MapSectionData>().apply {
+                        sections.forEachIndexed { index, mapSection ->
+                            this[index] = mapSection.getData()
+                        }
                     }
                 )
             )

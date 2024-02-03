@@ -8,6 +8,7 @@ import java.nio.file.Paths
 
 val json = Json {
     prettyPrint = true
+    ignoreUnknownKeys = true
     encodeDefaults = true
 }
 

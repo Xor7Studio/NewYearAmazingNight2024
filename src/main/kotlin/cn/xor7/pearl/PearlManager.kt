@@ -25,7 +25,7 @@ object PearlManager {
     fun allowedSectionsContains(section: MapSection) = allowedSections.contains(section)
 
     fun inAllowedLocation(loc: Location): Boolean {
-        if (!configData.clearTransgressivePearls) return true
+        // if (!configData.clearTransgressivePearls) return true
         if (allowedSections.isEmpty()) return true
         if (allowedSections.any { it.getPosition(loc) in 0.00..it.sectionLength }) return true
         return false

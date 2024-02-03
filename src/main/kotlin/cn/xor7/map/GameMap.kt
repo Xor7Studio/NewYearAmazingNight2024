@@ -12,11 +12,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Suppress("MemberVisibilityCanBePrivate")
 object GameMap {
     private const val MAP_DATA_FILE_NAME = ".nyan/map.json"
-    internal val trackers = mutableMapOf<String, PlayerTracker>()
-    internal val ranking = mutableListOf<PlayerTracker>()
     private val sections = CopyOnWriteArrayList<MapSection>()
     private val json = Json { prettyPrint = true }
     private var lengthPrefixSum = mutableMapOf<Int, Double>()
+    val trackers = mutableMapOf<String, PlayerTracker>()
+    val ranking = mutableListOf<PlayerTracker>()
     var showingMapParticle = false
     var showingRadiusParticle = false
     val playerSpawnInfo = mutableMapOf<String, Pair<Location, Int>>()
@@ -36,7 +36,7 @@ object GameMap {
         ranking.insertionSort(compareBy({ it.nowPosition }, { it.playerName }))
     }
 
-    fun getRanking() = ranking.toList()
+    fun getRankingList() = ranking.toList()
 
     fun getSection(sectionId: Int): MapSection? = sections.getOrNull(sectionId)
 
@@ -45,7 +45,7 @@ object GameMap {
     fun sectionCount() = sections.size
 
     fun setSection(sectionId: Int, section: MapSection) {
-        if(sectionId >= sections.size) sections.add(section)
+        if (sectionId >= sections.size) sections.add(section)
         else sections[sectionId] = section
         calcLengthPrefixSum()
         saveMap()

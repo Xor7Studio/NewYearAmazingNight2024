@@ -63,9 +63,7 @@ class NewYearAmazingNight : JavaPlugin() {
         }.runTaskTimer(this, 0L, 20L)
     }
 
-    override fun onDisable() {
-        apiServer.stop()
-    }
+    override fun onDisable() = apiServer.stop()
 }
 
 fun Player.sendToSpawnPoint() {

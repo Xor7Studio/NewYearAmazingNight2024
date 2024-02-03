@@ -1,7 +1,7 @@
 package cn.xor7.scoreboard
 
-import cn.xor7.getTracker
 import cn.xor7.readConfig
+import cn.xor7.tracker
 import fr.mrmicky.fastboard.FastBoard
 import org.bukkit.entity.Player
 
@@ -21,12 +21,12 @@ object ScoreboardManager {
     fun updateScoreboard() {
         scoreboards.forEach { (player, scoreboard) ->
             scoreboard.updateLines(run {
-                if (player.getTracker()!!.developmentMode)
+                if (player.tracker!!.developmentMode)
                     scoreboardData.devLines
                 else
                     scoreboardData.lines
             }.map { line ->
-                val tracker = player.getTracker()!!
+                val tracker = player.tracker!!
                 line.replace("%player%", player.name)
                     .replace("%section%", tracker.nowSectionId.toString())
                     .replace("%position%", tracker.nowPosition.toString())

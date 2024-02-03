@@ -1,11 +1,11 @@
 package cn.xor7.map
 
-import cn.xor7.getTracker
 import cn.xor7.gravel.GravelManager
 import cn.xor7.gravel.GravelManager.canPassGravelSection
 import cn.xor7.instance
 import cn.xor7.scoreboard.ScoreboardManager
 import cn.xor7.sendToSpawnPoint
+import cn.xor7.tracker
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -37,7 +37,7 @@ object MapListener : Listener {
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
         val player = event.player
-        val tracker = player.getTracker() ?: return
+        val tracker = player.tracker ?: return
         val blockPos = event.to.toBlockLocation().subtract(0.0, 1.0, 0.0)
         val block = blockPos.block
 
@@ -92,6 +92,6 @@ object MapListener : Listener {
     fun onEntityDamage(event: EntityDamageEvent) {
         if (event.entity !is org.bukkit.entity.Player) return
         val player = event.entity as org.bukkit.entity.Player
-        if (player.getTracker()?.invincible == true) event.isCancelled = true
+        if (player.tracker?.invincible == true) event.isCancelled = true
     }
 }

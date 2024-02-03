@@ -2,6 +2,7 @@ package cn.xor7
 
 import cn.xor7.map.GameMap
 import cn.xor7.map.MapListener
+import cn.xor7.map.PlayerTracker
 import cn.xor7.map.PlayerTrackerData
 import cn.xor7.pearl.PearlListener
 import cn.xor7.scoreboard.ScoreboardManager
@@ -14,8 +15,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
@@ -70,7 +69,7 @@ class NewYearAmazingNight : JavaPlugin() {
 }
 
 fun Player.sendToSpawnPoint() {
-    getTracker()!!.apply {
+    tracker!!.apply {
         nowSectionId = GameMap.playerSpawnInfo[name]?.second ?: 0
         invincible = true
         instance.runLater(20L) {
@@ -84,7 +83,8 @@ fun Player.sendToSpawnPoint() {
     )
 }
 
-fun Player.getTracker() = GameMap.trackers[name]
+val Player.tracker: PlayerTracker?
+    get() = GameMap.trackers[name]
 
 fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
     object : BukkitRunnable() {
@@ -93,5 +93,3 @@ fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
         }
     }.runTaskLater(this, delay)
 }
-
-fun Component.legacyText() = LegacyComponentSerializer.legacyAmpersand().serialize(this)

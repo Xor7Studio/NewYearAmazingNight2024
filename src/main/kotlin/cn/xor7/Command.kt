@@ -18,6 +18,13 @@ object Command {
                     }
                 }
             }
+            literalArgument("section") {
+                integerArgument("id") {
+                    playerExecutor { player, commandArguments ->
+                        player.tracker?.nowSectionId = commandArguments["id"] as Int
+                    }
+                }
+            }
         }
         commandTree("development") {
             withPermission("nyan.dev")
@@ -25,11 +32,11 @@ object Command {
             playerArgument("player", optional = true) {
                 playerExecutor { sender, args ->
                     val player = args.getOptional("player").orElse(sender) as Player
-                    if (player.getTracker()!!.developmentMode) {
-                        player.getTracker()!!.developmentMode = false
+                    if (player.tracker!!.developmentMode) {
+                        player.tracker!!.developmentMode = false
                         player.sendMessage("§a已关闭开发者模式")
                     } else {
-                        player.getTracker()!!.developmentMode = true
+                        player.tracker!!.developmentMode = true
                         player.sendMessage("§a已开启开发者模式")
                     }
                 }

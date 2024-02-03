@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PearlConfigData(
-    val disableSectionRadiusCheckWhenPearlFlying: Boolean = true,
-    val clearTransgressivePearls: Boolean = true,
+    // 这俩东西没做出来呢...
+    // val disableSectionRadiusCheckWhenPearlFlying: Boolean = true,
+    // val clearTransgressivePearls: Boolean = true,
     val allowedSections: Set<Int> = emptySet(),
 )

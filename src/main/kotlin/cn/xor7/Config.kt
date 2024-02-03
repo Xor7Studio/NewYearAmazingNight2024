@@ -6,9 +6,12 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-val json = Json { prettyPrint = true }
+val json = Json {
+    prettyPrint = true
+    encodeDefaults = true
+}
 
-fun getOrCreateJsonFile(path: String):File {
+fun getOrCreateJsonFile(path: String): File {
     val jsonFile = File(path)
     if (!jsonFile.isFile) {
         jsonFile.createNewFile()
@@ -18,14 +21,9 @@ fun getOrCreateJsonFile(path: String):File {
 }
 
 inline fun <reified T> readConfig(path: String, beforeWrite: (data: T) -> Unit = {}): T {
-    val configJsonFile = File(path)
-    if (!configJsonFile.isFile) {
-        configJsonFile.createNewFile()
-        configJsonFile.writeText("{}")
-    }
+    val configJsonFile = getOrCreateJsonFile(path)
     val data: T = json.decodeFromString<T>(Files.readString(Paths.get(path)))
     beforeWrite(data)
-    println(data.toString())
     configJsonFile.writeText(json.encodeToString(data))
     return data
 }

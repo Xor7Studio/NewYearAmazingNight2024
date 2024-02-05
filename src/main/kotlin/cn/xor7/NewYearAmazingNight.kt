@@ -8,14 +8,13 @@ import cn.xor7.pearl.PearlListener
 import cn.xor7.scoreboard.ScoreboardManager
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
+import org.bukkit.event.Cancellable
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -23,9 +22,9 @@ val instance by lazy { JavaPlugin.getPlugin(NewYearAmazingNight::class.java) }
 
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
-    private val apiServer = embeddedServer(Netty, 8000) {
-        setupApplication()
-    }.start(wait = false)
+    // private val apiServer = embeddedServer(Netty, 8000) {
+    //     setupApplication()
+    // }.start(wait = false)
 
     private fun Application.setupApplication() {
         install(CORS) {
@@ -63,7 +62,7 @@ class NewYearAmazingNight : JavaPlugin() {
         }.runTaskTimer(this, 0L, 20L)
     }
 
-    override fun onDisable() = apiServer.stop()
+    // override fun onDisable() = apiServer.stop()
 }
 
 fun Player.sendToSpawnPoint() {
@@ -90,4 +89,12 @@ fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
             this.task()
         }
     }.runTaskLater(this, delay)
+}
+
+fun Cancellable.cancelInNonDevMode(player: Player) {
+    val tracker = player.tracker ?: run {
+        isCancelled = true
+        return
+    }
+    if (!tracker.developmentMode) isCancelled = true
 }

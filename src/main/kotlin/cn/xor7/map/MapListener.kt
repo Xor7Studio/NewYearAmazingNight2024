@@ -1,5 +1,6 @@
 package cn.xor7.map
 
+import cn.xor7.cancelInNonDevMode
 import cn.xor7.gravel.GravelManager
 import cn.xor7.gravel.GravelManager.canPassGravelSection
 import cn.xor7.instance
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action.*
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -59,7 +61,10 @@ object MapListener : Listener {
 
             Material.SUSPICIOUS_GRAVEL -> {
                 if (GravelManager.getTargetSectionId() != tracker.nowSectionId) return
-                if (!player.canPassGravelSection()) player.sendToSpawnPoint()
+                if (!player.canPassGravelSection()) {
+                    player.sendMessage("§c在玩家${GravelManager.getTargetPlayerName()}通过本关前，你不能进行尝试！")
+                    player.sendToSpawnPoint()
+                }
             }
 
             else -> return
@@ -68,23 +73,33 @@ object MapListener : Listener {
 
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val item = event.item ?: return
         val player = event.player
-        when (item.type) {
-            Material.BLAZE_ROD -> player.sendToSpawnPoint()
-            Material.ENDER_EYE -> {
-                if (hideOtherPlayer[player.name] == false) {
-                    hideOtherPlayer[player.name] = true
-                    Bukkit.getOnlinePlayers().forEach { player.hidePlayer(instance, it) }
-                    player.sendMessage("§a已隐藏其他玩家")
-                } else {
-                    hideOtherPlayer[player.name] = false
-                    Bukkit.getOnlinePlayers().forEach { player.showPlayer(instance, it) }
-                    player.sendMessage("§a已显示其他玩家")
+        when (event.action) {
+            RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
+                run {
+                    val item = event.item ?: return@run
+                    when (item.type) {
+                        Material.BLAZE_ROD -> player.sendToSpawnPoint()
+                        Material.ENDER_EYE -> {
+                            if (hideOtherPlayer[player.name] == false) {
+                                hideOtherPlayer[player.name] = true
+                                Bukkit.getOnlinePlayers().forEach { player.hidePlayer(instance, it) }
+                                player.sendMessage("§a已隐藏其他玩家")
+                            } else {
+                                hideOtherPlayer[player.name] = false
+                                Bukkit.getOnlinePlayers().forEach { player.showPlayer(instance, it) }
+                                player.sendMessage("§a已显示其他玩家")
+                            }
+                        }
+
+                        else -> event.cancelInNonDevMode(player)
+                    }
                 }
             }
 
-            else -> return
+            LEFT_CLICK_BLOCK -> event.cancelInNonDevMode(player)
+            LEFT_CLICK_AIR -> event.cancelInNonDevMode(player)
+            PHYSICAL -> return
         }
     }
 

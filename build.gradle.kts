@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "cn.xor7"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     maven("https://repo.leavesmc.top/snapshots")
@@ -43,6 +43,16 @@ application {
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.processResources {
+    filesMatching("paper-plugin.yml") {
+        expand(
+            mapOf(
+                "version" to version,
+            )
+        )
+    }
 }
 
 tasks.withType<ShadowJar> {

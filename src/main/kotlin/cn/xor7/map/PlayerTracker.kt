@@ -1,6 +1,9 @@
 package cn.xor7.map
 
 import cn.xor7.pearl.PearlManager
+import cn.xor7.raft.RaftManager
+import cn.xor7.removeBambooRaft
+import cn.xor7.removeEnderPearl
 import cn.xor7.sendToSpawnPoint
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -39,7 +42,7 @@ class PlayerTracker internal constructor(val playerName: String) {
         var nowSectionPosition = nowSection.getPosition(player.location)
         var nowDistanceToBeginPointSquared = nowSection.getDistanceToBeginPointSquared(player.location)
         var minDistanceSquared = nowSection.getDistanceSquared(nowDistanceToBeginPointSquared, nowSectionPosition)
-        for (i in nowSectionId - 2..nowSectionId + 2) {
+        for (i in nowSectionId - 5..nowSectionId + 5) {
             if (i == nowSectionId) continue
             val section = GameMap.getSection(i) ?: continue
             val position = section.getPosition(player.location)
@@ -72,27 +75,24 @@ class PlayerTracker internal constructor(val playerName: String) {
 
         nowPosition = GameMap.getLengthPrefixSum(nowSectionId - 1) + nowSectionPosition
 
-        player.inventory.filter { it?.itemMeta?.isUnbreakable == true }.forEach {
-            when(it.type) {
-                Material.ENDER_PEARL -> player.inventory.removeItem(it)
-                else -> {}
-            }
-        }
-        if (PearlManager.allowedSectionsContains(nowSection)) run {
-            player.inventory.addItem(ItemStack(Material.ENDER_PEARL, 1).apply {
+        if (PearlManager.allowedSectionsContains(nowSection)) {
+            player.removeEnderPearl()
+            player.inventory.addItem(ItemStack(Material.ENDER_PEARL).apply {
                 itemMeta = itemMeta.apply {
                     displayName(Component.text("§a传送珍珠"))
                     isUnbreakable = true
                 }
             })
-        }
-    }
+        } else player.removeEnderPearl()
 
-    fun getData(): PlayerTrackerData {
-        return PlayerTrackerData(
-            name = playerName,
-            location = nowLocation,
-            position = nowPosition,
-        )
+        if (RaftManager.allowedSectionsContains(nowSectionId)) {
+            player.removeBambooRaft()
+            if (player.vehicle == null) player.inventory.addItem(ItemStack(Material.BAMBOO_RAFT).apply {
+                itemMeta = itemMeta.apply {
+                    displayName(Component.text("§a木筏"))
+                    isUnbreakable = true
+                }
+            })
+        } else player.removeBambooRaft()
     }
 }

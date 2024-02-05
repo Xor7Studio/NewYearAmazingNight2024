@@ -1,15 +1,16 @@
 package cn.xor7.map
 
-import cn.xor7.cancelInNonDevMode
+import cn.xor7.*
 import cn.xor7.gravel.GravelManager
 import cn.xor7.gravel.GravelManager.canPassGravelSection
-import cn.xor7.instance
+import cn.xor7.raft.RaftManager
 import cn.xor7.scoreboard.ScoreboardManager
-import cn.xor7.sendToSpawnPoint
-import cn.xor7.tracker
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.Boat
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action.*
@@ -18,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.vehicle.VehicleExitEvent
 
 object MapListener : Listener {
     private val hideOtherPlayer = mutableMapOf<String, Boolean>()
@@ -46,6 +48,9 @@ object MapListener : Listener {
         if (player.name == GravelManager.getTargetPlayerName() &&
             tracker.nowSectionId > GravelManager.getTargetSectionId()
         ) GravelManager.pass = true
+
+        if (!RaftManager.allowedSectionsContains(tracker.nowSectionId) && player.vehicle?.type == EntityType.BOAT)
+            player.vehicle?.remove()
 
         when (block.type) {
             Material.GOLD_BLOCK -> {
@@ -80,6 +85,7 @@ object MapListener : Listener {
                     val item = event.item ?: return@run
                     when (item.type) {
                         Material.BLAZE_ROD -> player.sendToSpawnPoint()
+                        Material.ENDER_PEARL -> return
                         Material.ENDER_EYE -> {
                             if (hideOtherPlayer[player.name] == false) {
                                 hideOtherPlayer[player.name] = true
@@ -92,21 +98,40 @@ object MapListener : Listener {
                             }
                         }
 
-                        else -> event.cancelInNonDevMode(player)
+                        Material.BAMBOO_RAFT -> {
+                            player.vehicle?.remove()
+                            player.removeBambooRaft()
+                            player.world.spawn(player.location, Boat::class.java).apply {
+                                boatType = Boat.Type.BAMBOO
+                                addPassenger(player)
+                            }
+                        }
+
+                        else -> return@run
                     }
                 }
+                event.cancelInNonDevMode(player)
             }
 
             LEFT_CLICK_BLOCK -> event.cancelInNonDevMode(player)
             LEFT_CLICK_AIR -> event.cancelInNonDevMode(player)
-            PHYSICAL -> return
+            PHYSICAL -> if (event.clickedBlock?.type == Material.FARMLAND) event.isCancelled = true
         }
     }
 
     @EventHandler
     fun onEntityDamage(event: EntityDamageEvent) {
-        if (event.entity !is org.bukkit.entity.Player) return
-        val player = event.entity as org.bukkit.entity.Player
+        if (event.entity !is Player) return
+        val player = event.entity as Player
         if (player.tracker?.invincible == true) event.isCancelled = true
+    }
+
+    @EventHandler
+    fun onVehicleExit(event: VehicleExitEvent) {
+        val exited = event.exited
+        if (exited is Player) {
+            exited.removeBambooRaft()
+            event.vehicle.remove()
+        }
     }
 }

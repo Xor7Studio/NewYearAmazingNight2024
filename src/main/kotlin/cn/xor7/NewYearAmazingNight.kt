@@ -3,16 +3,9 @@ package cn.xor7
 import cn.xor7.map.GameMap
 import cn.xor7.map.MapListener
 import cn.xor7.map.PlayerTracker
-import cn.xor7.map.PlayerTrackerData
 import cn.xor7.pearl.PearlListener
 import cn.xor7.scoreboard.ScoreboardManager
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.plugin.java.JavaPlugin
@@ -25,30 +18,30 @@ class NewYearAmazingNight : JavaPlugin() {
     // private val apiServer = embeddedServer(Netty, 8000) {
     //     setupApplication()
     // }.start(wait = false)
-
-    private fun Application.setupApplication() {
-        install(CORS) {
-            allowHeader(HttpHeaders.AccessControlAllowOrigin)
-            allowHeader(HttpHeaders.ContentType)
-            allowNonSimpleContentTypes = true
-            allowCredentials = true
-            allowSameOrigin = true
-            anyHost()
-        }
-
-        routing {
-            get("/data") {
-                call.respondText(
-                    text = Json.encodeToString(mutableListOf<PlayerTrackerData>().apply {
-                        GameMap.trackers.forEach { (_, tracker) ->
-                            this += tracker.getData()
-                        }
-                    }),
-                    contentType = ContentType.Application.Json
-                )
-            }
-        }
-    }
+    //
+    // private fun Application.setupApplication() {
+    //     install(CORS) {
+    //         allowHeader(HttpHeaders.AccessControlAllowOrigin)
+    //         allowHeader(HttpHeaders.ContentType)
+    //         allowNonSimpleContentTypes = true
+    //         allowCredentials = true
+    //         allowSameOrigin = true
+    //         anyHost()
+    //     }
+    //
+    //     routing {
+    //         get("/data") {
+    //             call.respondText(
+    //                 text = Json.encodeToString(mutableListOf<PlayerTrackerData>().apply {
+    //                     GameMap.trackers.forEach { (_, tracker) ->
+    //                         this += tracker.getData()
+    //                     }
+    //                 }),
+    //                 contentType = ContentType.Application.Json
+    //             )
+    //         }
+    //     }
+    // }
 
     override fun onEnable() {
         server.pluginManager.registerEvents(MapListener, this)
@@ -82,6 +75,20 @@ fun Player.sendToSpawnPoint() {
 
 val Player.tracker: PlayerTracker?
     get() = GameMap.trackers[name]
+
+fun Player.removeBambooRaft() {
+    inventory.forEach {
+        if (it?.type == Material.BAMBOO_RAFT)
+            inventory.remove(it)
+    }
+}
+
+fun Player.removeEnderPearl() {
+    inventory.forEach {
+        if (it?.type == Material.ENDER_PEARL)
+            inventory.remove(it)
+    }
+}
 
 fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
     object : BukkitRunnable() {

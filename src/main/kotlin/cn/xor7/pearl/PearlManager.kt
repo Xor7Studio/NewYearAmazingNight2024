@@ -27,7 +27,7 @@ object PearlManager {
     fun inAllowedLocation(loc: Location): Boolean {
         // if (!configData.clearTransgressivePearls) return true
         if (allowedSections.isEmpty()) return true
-        if (allowedSections.any { it.getPosition(loc) in 0.00..it.sectionLength }) return true
+        if (allowedSections.any { it.getPosition(loc) in 0.0..it.sectionLength }) return true
         return false
     }
 }

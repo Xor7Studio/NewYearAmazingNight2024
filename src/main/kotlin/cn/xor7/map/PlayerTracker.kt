@@ -9,6 +9,8 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PlayerTracker internal constructor(val playerName: String) {
@@ -43,11 +45,17 @@ class PlayerTracker internal constructor(val playerName: String) {
         var nowDistanceToBeginPointSquared = nowSection.getDistanceToBeginPointSquared(player.location)
         var minDistanceSquared = nowSection.getDistanceSquared(nowDistanceToBeginPointSquared, nowSectionPosition)
         for (i in nowSectionId - 5..nowSectionId + 5) {
-            if (i == nowSectionId) continue
             val section = GameMap.getSection(i) ?: continue
             val position = section.getPosition(player.location)
             val distanceToBeginPointSquared = section.getDistanceToBeginPointSquared(player.location)
             val distanceSquared = section.getDistanceSquared(distanceToBeginPointSquared, position)
+            if( i == 0 && position < 0) {
+                nowSectionId = 0
+                this.nowPosition = 0.0
+                this.nowSectionPosition = 0.0
+                this.nowSectionDistanceSquared = 0.0
+                return
+            }
             if (distanceSquared < minDistanceSquared && position in 0.0..section.sectionLength) {
                 nowSectionId = i
                 nowDistanceToBeginPointSquared = distanceToBeginPointSquared
@@ -86,6 +94,7 @@ class PlayerTracker internal constructor(val playerName: String) {
         } else player.removeEnderPearl()
 
         if (RaftManager.allowedSectionsContains(nowSectionId)) {
+            player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 20, 3, true, false, false))
             player.removeBambooRaft()
             if (player.vehicle == null) player.inventory.addItem(ItemStack(Material.BAMBOO_RAFT).apply {
                 itemMeta = itemMeta.apply {

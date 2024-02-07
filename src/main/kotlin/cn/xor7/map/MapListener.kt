@@ -22,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.vehicle.VehicleExitEvent
 
 object MapListener : Listener {
-    private val hideOtherPlayer = mutableMapOf<String, Boolean>()
+    private val showOtherPlayer = mutableMapOf<String, Boolean>()
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
@@ -87,14 +87,14 @@ object MapListener : Listener {
                         Material.BLAZE_ROD -> player.sendToSpawnPoint()
                         Material.ENDER_PEARL -> return
                         Material.ENDER_EYE -> {
-                            if (hideOtherPlayer[player.name] == false) {
-                                hideOtherPlayer[player.name] = true
-                                Bukkit.getOnlinePlayers().forEach { player.hidePlayer(instance, it) }
-                                player.sendMessage("§a已隐藏其他玩家")
-                            } else {
-                                hideOtherPlayer[player.name] = false
+                            if (showOtherPlayer[player.name] == false) {
+                                showOtherPlayer[player.name] = true
                                 Bukkit.getOnlinePlayers().forEach { player.showPlayer(instance, it) }
                                 player.sendMessage("§a已显示其他玩家")
+                            } else {
+                                showOtherPlayer[player.name] = false
+                                Bukkit.getOnlinePlayers().forEach { player.hidePlayer(instance, it) }
+                                player.sendMessage("§a已隐藏其他玩家")
                             }
                         }
 

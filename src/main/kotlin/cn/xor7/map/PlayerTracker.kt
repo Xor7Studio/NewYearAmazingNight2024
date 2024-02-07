@@ -31,6 +31,7 @@ class PlayerTracker internal constructor(val playerName: String) {
 
     var developmentMode = false
     var nowLocation = SimpleLocation(0.0, 0.0, 0.0)
+    var ranking = 1
 
     @Volatile
     var invincible = false

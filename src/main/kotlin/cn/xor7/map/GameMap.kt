@@ -34,9 +34,22 @@ object GameMap {
             tracker.trackNowSection()
         }
         ranking.insertionSort(compareBy({ it.nowPosition }, { it.playerName }))
+        ranking.forEachIndexed { index, playerTracker ->
+            playerTracker.ranking = index + 1
+        }
     }
 
-    fun getRankingList() = ranking.toList()
+    fun getRankingList(index: Int, size: Int): List<String> {
+        val halfWindowSize = size / 2
+        val start = (index - halfWindowSize).coerceAtLeast(0)
+        val end = (start + size).coerceAtMost(ranking.size)
+
+        val result = ranking.subList(start, end).map { it.playerName }.toMutableList()
+
+        while (result.size < size) result.add("")
+
+        return result
+    }
 
     fun getSection(sectionId: Int): MapSection? = sections.getOrNull(sectionId)
 

@@ -1,5 +1,6 @@
 package cn.xor7.scoreboard
 
+import cn.xor7.map.GameMap
 import cn.xor7.readConfig
 import cn.xor7.tracker
 import fr.mrmicky.fastboard.FastBoard
@@ -27,11 +28,18 @@ object ScoreboardManager {
                     scoreboardData.lines
             }.map { line ->
                 val tracker = player.tracker!!
-                line.replace("%player%", player.name)
+                var result = line.replace("%player%", player.name)
                     .replace("%section%", tracker.nowSectionId.toString())
                     .replace("%position%", tracker.nowPosition.toString())
                     .replace("%section_position%", tracker.nowSectionPosition.toString())
                     .replace("%section_distance%", tracker.nowSectionDistanceSquared.toString())
+                    .replace("%ranking%", tracker.ranking.toString())
+                val rankingList = GameMap.getRankingList(tracker.ranking - 1, scoreboardData.rankLineNum)
+                result = Regex("%ranking_(\\d+)%").replace(result) { matchResult ->
+                    val offset = matchResult.groupValues[1].toInt()
+                    return@replace rankingList[offset]
+                }
+                return@map result
             })
         }
     }

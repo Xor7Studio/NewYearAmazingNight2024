@@ -5,7 +5,10 @@ import cn.xor7.raft.RaftManager
 import cn.xor7.removeBambooRaft
 import cn.xor7.removeEnderPearl
 import cn.xor7.sendToSpawnPoint
+import cn.xor7.toOrdinal
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.util.Ticks
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -30,6 +33,7 @@ class PlayerTracker internal constructor(val playerName: String) {
         private set
 
     var developmentMode = false
+    var over = false
     var nowLocation = SimpleLocation(0.0, 0.0, 0.0)
     var ranking = 1
 
@@ -37,6 +41,8 @@ class PlayerTracker internal constructor(val playerName: String) {
     var invincible = false
 
     fun trackNowSection() {
+        if (over) return
+
         val player = Bukkit.getPlayer(playerName) ?: return
         nowLocation = SimpleLocation(player.location.x, player.location.y, player.location.z)
 
@@ -50,7 +56,7 @@ class PlayerTracker internal constructor(val playerName: String) {
             val position = section.getPosition(player.location)
             val distanceToBeginPointSquared = section.getDistanceToBeginPointSquared(player.location)
             val distanceSquared = section.getDistanceSquared(distanceToBeginPointSquared, position)
-            if( i == 0 && position < 0) {
+            if (i == 0 && position < 0) {
                 nowSectionId = 0
                 this.nowPosition = 0.0
                 this.nowSectionPosition = 0.0
@@ -65,12 +71,39 @@ class PlayerTracker internal constructor(val playerName: String) {
             }
         }
 
-        if (!developmentMode &&
-            (minDistanceSquared > nowSection.radiusSquared
-                    || (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared))
-        ) {
-            nowSectionId = GameMap.playerSpawnInfo[playerName]?.second ?: 0
-            player.sendToSpawnPoint()
+        if (!developmentMode) {
+            if (!GameMap.gameRunning && nowSectionPosition > 0) {
+                player.sendMessage("§c游戏尚未开始！")
+                player.sendToSpawnPoint()
+                nowPosition = 0.0
+                this.nowSectionPosition = 0.0
+                this.nowSectionDistanceSquared = 0.0
+                return
+            }
+            if (nowSectionId == (GameMap.sectionCount() - 1) && nowSectionPosition >= (nowSection.sectionLength - 1)) {
+                nowPosition = GameMap.getLengthPrefixSum(nowSectionId) + 2024 - ranking
+                nowSectionId = 0
+                over = true
+                player.showTitle(
+                    Title.title(
+                        Component.text("§a恭喜你完成比赛！"),
+                        Component.text(ranking.toOrdinal()),
+                        Title.Times.times(
+                            Ticks.duration(10L),
+                            Ticks.duration(300L),
+                            Ticks.duration(20L)
+                        )
+                    )
+                )
+                player.teleport(player.world.spawnLocation)
+                return
+            }
+            if (minDistanceSquared > nowSection.radiusSquared ||
+                (nowSectionPosition < 0 && nowDistanceToBeginPointSquared > nowSection.radiusSquared)
+            ) {
+                nowSectionId = GameMap.playerSpawnInfo[playerName]?.second ?: 0
+                player.sendToSpawnPoint()
+            }
         }
 
         nowSectionPosition = when {
@@ -95,7 +128,16 @@ class PlayerTracker internal constructor(val playerName: String) {
         } else player.removeEnderPearl()
 
         if (RaftManager.allowedSectionsContains(nowSectionId)) {
-            player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 20, 3, true, false, false))
+            player.addPotionEffect(
+                PotionEffect(
+                    PotionEffectType.SLOW,
+                    20,
+                    3,
+                    true,
+                    false,
+                    false
+                )
+            )
             player.removeBambooRaft()
             if (player.vehicle == null) player.inventory.addItem(ItemStack(Material.BAMBOO_RAFT).apply {
                 itemMeta = itemMeta.apply {

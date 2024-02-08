@@ -3,12 +3,37 @@ package cn.xor7
 import cn.xor7.gravel.GravelManager
 import cn.xor7.map.*
 import dev.jorel.commandapi.kotlindsl.*
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object Command {
     fun register() {
+        commandTree("start") {
+            anyExecutor { _, _ ->
+                Bukkit.broadcast(Component.text("§a游戏开始！"))
+                Bukkit.getOnlinePlayers().forEach {
+                    it.sendToSpawnPoint()
+                    it.inventory.apply {
+                        setItem(0,ItemStack(Material.BLAZE_ROD).apply {
+                            itemMeta = itemMeta.apply {
+                                displayName(Component.text("§a返回记录点"))
+                            }
+                        })
+                        setItem(1,ItemStack(Material.ENDER_EYE).apply {
+                            itemMeta = itemMeta.apply {
+                                displayName(Component.text("§a切换玩家可见性"))
+                            }
+                        })
+                    }
+                }
+                GameMap.gameRunning = true
+            }
+        }
         commandTree("state") {
             withPermission("nyan.state")
             literalArgument("gravel") {
@@ -22,6 +47,13 @@ object Command {
                 integerArgument("id") {
                     playerExecutor { player, commandArguments ->
                         player.tracker?.nowSectionId = commandArguments["id"] as Int
+                    }
+                }
+            }
+            literalArgument("running") {
+                booleanArgument("state") {
+                    playerExecutor { _, commandArguments ->
+                        GameMap.gameRunning = commandArguments["state"] as Boolean
                     }
                 }
             }

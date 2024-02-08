@@ -98,10 +98,24 @@ fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
     }.runTaskLater(this, delay)
 }
 
-fun Cancellable.cancelInNonDevMode(player: Player) {
+fun Cancellable.cancelWhenPlaying(player: Player) {
     val tracker = player.tracker ?: run {
         isCancelled = true
         return
     }
+    if (tracker.over) {
+        isCancelled = false
+        return
+    }
     if (!tracker.developmentMode) isCancelled = true
+}
+
+fun Int.toOrdinal(): String {
+    val suffixes = mapOf(1 to "st", 2 to "nd", 3 to "rd")
+
+    return when {
+        this % 100 in 11..13 -> "${this}th"
+        this % 10 in suffixes.keys -> "${this}${suffixes[this % 10]}"
+        else -> "${this}th"
+    }
 }

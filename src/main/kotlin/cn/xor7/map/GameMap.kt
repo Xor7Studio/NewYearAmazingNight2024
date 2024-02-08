@@ -17,9 +17,11 @@ object GameMap {
     private var lengthPrefixSum = mutableMapOf<Int, Double>()
     val trackers = mutableMapOf<String, PlayerTracker>()
     val ranking = mutableListOf<PlayerTracker>()
+    val mainTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("main")
     var showingMapParticle = false
     var showingRadiusParticle = false
     val playerSpawnInfo = mutableMapOf<String, Pair<Location, Int>>()
+    var gameRunning = false
 
     init {
         try {
@@ -43,11 +45,8 @@ object GameMap {
         val halfWindowSize = size / 2
         val start = (index - halfWindowSize).coerceAtLeast(0)
         val end = (start + size).coerceAtMost(ranking.size)
-
-        val result = ranking.subList(start, end).map { it.playerName }.toMutableList()
-
+        val result = ranking.subList(start, end).map { "${it.ranking} - ${it.playerName}" }.toMutableList()
         while (result.size < size) result.add("")
-
         return result
     }
 
@@ -130,11 +129,12 @@ object GameMap {
             val key = this[i]
             var j = i - 1
 
-            while (j >= 0 && compare.compare(this[j], key) > 0) {
+            while (j >= 0 && compare.compare(key, this[j]) > 0) {
                 this[j + 1] = this[j]
                 j--
             }
             this[j + 1] = key
         }
     }
+
 }

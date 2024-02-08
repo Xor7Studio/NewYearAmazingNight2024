@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "cn.xor7"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     maven("https://repo.leavesmc.top/snapshots")
@@ -27,14 +27,8 @@ dependencies {
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
     compileOnly("dev.jorel:commandapi-bukkit-core:9.3.0")
     compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.3.0")
-    // 暂不需要
-    // implementation("net.jodah:expiringmap:0.5.11")
-    implementation("cn.zhxu:okhttps:4.0.1")
-    implementation("io.ktor:ktor-server-netty:2.3.7")
-    implementation("io.ktor:ktor-server-cors:2.3.7")
     implementation("fr.mrmicky:fastboard:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 application {

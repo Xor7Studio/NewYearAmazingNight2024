@@ -15,34 +15,6 @@ val instance by lazy { JavaPlugin.getPlugin(NewYearAmazingNight::class.java) }
 
 @Suppress("unused")
 class NewYearAmazingNight : JavaPlugin() {
-    // private val apiServer = embeddedServer(Netty, 8000) {
-    //     setupApplication()
-    // }.start(wait = false)
-    //
-    // private fun Application.setupApplication() {
-    //     install(CORS) {
-    //         allowHeader(HttpHeaders.AccessControlAllowOrigin)
-    //         allowHeader(HttpHeaders.ContentType)
-    //         allowNonSimpleContentTypes = true
-    //         allowCredentials = true
-    //         allowSameOrigin = true
-    //         anyHost()
-    //     }
-    //
-    //     routing {
-    //         get("/data") {
-    //             call.respondText(
-    //                 text = Json.encodeToString(mutableListOf<PlayerTrackerData>().apply {
-    //                     GameMap.trackers.forEach { (_, tracker) ->
-    //                         this += tracker.getData()
-    //                     }
-    //                 }),
-    //                 contentType = ContentType.Application.Json
-    //             )
-    //         }
-    //     }
-    // }
-
     override fun onEnable() {
         server.pluginManager.registerEvents(MapListener, this)
         server.pluginManager.registerEvents(PearlListener, this)
@@ -52,8 +24,6 @@ class NewYearAmazingNight : JavaPlugin() {
             ScoreboardManager.updateScoreboard()
         }.runTaskTimer(this, 0L, 20L)
     }
-
-    // override fun onDisable() = apiServer.stop()
 }
 
 fun Player.sendToSpawnPoint() {

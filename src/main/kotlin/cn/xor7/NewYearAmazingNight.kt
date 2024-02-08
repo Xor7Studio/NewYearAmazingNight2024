@@ -47,11 +47,9 @@ class NewYearAmazingNight : JavaPlugin() {
         server.pluginManager.registerEvents(MapListener, this)
         server.pluginManager.registerEvents(PearlListener, this)
         Command.register()
-        object : BukkitRunnable() {
-            override fun run() {
-                GameMap.tick()
-                ScoreboardManager.updateScoreboard()
-            }
+        bukkitRunnable {
+            GameMap.tick()
+            ScoreboardManager.updateScoreboard()
         }.runTaskTimer(this, 0L, 20L)
     }
 
@@ -62,9 +60,9 @@ fun Player.sendToSpawnPoint() {
     tracker!!.apply {
         nowSectionId = GameMap.playerSpawnInfo[name]?.second ?: 0
         invincible = true
-        instance.runLater(20L) {
+        bukkitRunnable {
             invincible = false
-        }
+        }.runTaskLater(instance, 20L)
     }
     teleport(
         GameMap.playerSpawnInfo[name]?.first
@@ -90,14 +88,6 @@ fun Player.removeEnderPearl() {
     }
 }
 
-fun JavaPlugin.runLater(delay: Long, task: BukkitRunnable.() -> Unit) {
-    object : BukkitRunnable() {
-        override fun run() {
-            this.task()
-        }
-    }.runTaskLater(this, delay)
-}
-
 fun Cancellable.cancelWhenPlaying(player: Player) {
     val tracker = player.tracker ?: run {
         isCancelled = true
@@ -117,5 +107,13 @@ fun Int.toOrdinal(): String {
         this % 100 in 11..13 -> "${this}th"
         this % 10 in suffixes.keys -> "${this}${suffixes[this % 10]}"
         else -> "${this}th"
+    }
+}
+
+fun bukkitRunnable(block: () -> Unit): BukkitRunnable {
+    return object : BukkitRunnable() {
+        override fun run() {
+            block()
+        }
     }
 }

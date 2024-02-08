@@ -136,7 +136,6 @@ object Command {
                             GameMap.turnOffRadiusParticle()
                             GameMap.setSection(sectionId, MapSection(section.getData().copy(radius = radius)))
                             commandExecutor.sendMessage("§a已将赛段 $sectionId 的半径设置为 $radius")
-                            GameMap.turnOnRadiusParticle()
                         }
                     }
                 }
@@ -166,8 +165,6 @@ object Command {
                                     MapSection(secondSection.getData().copy(beginPos = location))
                                 )
                             }
-                            GameMap.turnOnMapParticle()
-                            GameMap.turnOnRadiusParticle()
                             commandExecutor.sendMessage("§a已将赛道关键点 $secondSectionId 设置为 ${location.toDebugText()}")
                         }
                     }
@@ -197,8 +194,6 @@ object Command {
                                 )
                                 GameMap.insertSection(firstSectionId + 1, newSection)
                                 commandExecutor.sendMessage("§a已将赛段 $firstSectionId 在关键点 ${point.toDebugText()} 处分割")
-                                GameMap.turnOnMapParticle()
-                                GameMap.turnOnRadiusParticle()
                             }
                         }
                     }
@@ -215,8 +210,6 @@ object Command {
                             val sectionId = GameMap.sectionCount()
                             val lastPoint = GameMap.getSection(sectionId - 1)?.endPos ?: SimpleLocation(0.0, 0.0, 0.0)
                             GameMap.setSection(sectionId, MapSection(MapSectionData(lastPoint, endPos, radius)))
-                            GameMap.turnOnMapParticle()
-                            GameMap.turnOnRadiusParticle()
                             commandExecutor.sendMessage("§a已创建赛段 $sectionId")
                         }
                     }

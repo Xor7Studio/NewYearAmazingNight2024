@@ -1,9 +1,10 @@
 package cn.xor7.map
 
+import cn.xor7.bukkitRunnable
+import cn.xor7.instance
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Particle
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import top.zoyn.particlelib.ParticleLib
@@ -94,7 +95,8 @@ class MapSection(private val data: MapSectionData) {
                 (beginPos.y - location.y).pow(2.0) +
                 (beginPos.z - location.z).pow(2.0)
 
-    fun getDistanceSquared(distanceToBeginPointSquared: Double, position: Double): Double = distanceToBeginPointSquared - position.pow(2.0)
+    fun getDistanceSquared(distanceToBeginPointSquared: Double, position: Double): Double =
+        distanceToBeginPointSquared - position.pow(2.0)
 
     fun tunOffRadiusParticleTask() {
         if (::radiusParticleTask.isInitialized) {
@@ -108,26 +110,22 @@ class MapSection(private val data: MapSectionData) {
     fun showRadiusParticle() {
         tunOffRadiusParticleTask()
 
-        Bukkit.getScheduler().runTaskLater(ParticleLib.getInstance(), Runnable {
+        bukkitRunnable {
             radiusParticleTaskRunning = true
-            radiusParticleTask = object : BukkitRunnable() {
-                override fun run() {
-                    if (!radiusParticleTaskRunning) {
-                        return
-                    }
-                    radiusParticlePositions.forEach { location ->
-                        Bukkit.getWorlds()[0].spawnParticle(
-                            Particle.VILLAGER_HAPPY,
-                            location,
-                            1,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0
-                        )
-                    }
+            radiusParticleTask = bukkitRunnable task@{
+                if (!radiusParticleTaskRunning) return@task
+                radiusParticlePositions.forEach { location ->
+                    Bukkit.getWorlds()[0].spawnParticle(
+                        Particle.VILLAGER_HAPPY,
+                        location,
+                        1,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    )
                 }
             }.runTaskTimer(ParticleLib.getInstance(), 0L, 2L)
-        }, 2L)
+        }.runTaskLater(instance, 2L)
     }
 }

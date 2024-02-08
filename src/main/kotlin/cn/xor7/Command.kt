@@ -4,34 +4,61 @@ import cn.xor7.gravel.GravelManager
 import cn.xor7.map.*
 import dev.jorel.commandapi.kotlindsl.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.util.Ticks
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
 object Command {
     fun register() {
         commandTree("start") {
             anyExecutor { _, _ ->
-                Bukkit.broadcast(Component.text("§a游戏开始！"))
-                Bukkit.getOnlinePlayers().forEach {
-                    it.sendToSpawnPoint()
-                    it.inventory.apply {
-                        setItem(0,ItemStack(Material.BLAZE_ROD).apply {
-                            itemMeta = itemMeta.apply {
-                                displayName(Component.text("§a返回记录点"))
+                object : BukkitRunnable() {
+                    var counter = 10
+
+                    override fun run() {
+                        if (counter == 0) {
+                            Bukkit.broadcast(Component.text("§a游戏开始！"))
+                            Bukkit.getOnlinePlayers().forEach {
+                                it.sendToSpawnPoint()
+                                it.inventory.apply {
+                                    setItem(0, ItemStack(Material.BLAZE_ROD).apply {
+                                        itemMeta = itemMeta.apply {
+                                            displayName(Component.text("§a返回记录点"))
+                                        }
+                                    })
+                                    setItem(1, ItemStack(Material.ENDER_EYE).apply {
+                                        itemMeta = itemMeta.apply {
+                                            displayName(Component.text("§a切换玩家可见性"))
+                                        }
+                                    })
+                                }
                             }
-                        })
-                        setItem(1,ItemStack(Material.ENDER_EYE).apply {
-                            itemMeta = itemMeta.apply {
-                                displayName(Component.text("§a切换玩家可见性"))
-                            }
-                        })
+                            GameMap.gameRunning = true
+                            this.cancel()
+                            return
+                        }
+                        Bukkit.getOnlinePlayers().forEach {
+                            it.showTitle(
+                                Title.title(
+                                    Component.text("§a$counter"),
+                                    Component.text(""),
+                                    Title.Times.times(
+                                        Ticks.duration(10),
+                                        Ticks.duration(20),
+                                        Ticks.duration(10)
+                                    )
+                                )
+                            )
+                        }
+                        counter--
                     }
-                }
-                GameMap.gameRunning = true
+                }.runTaskTimer(instance, 0L, 20L)
             }
         }
         commandTree("state") {

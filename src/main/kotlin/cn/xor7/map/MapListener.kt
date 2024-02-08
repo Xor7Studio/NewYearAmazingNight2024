@@ -5,6 +5,7 @@ import cn.xor7.gravel.GravelManager
 import cn.xor7.gravel.GravelManager.canPassGravelSection
 import cn.xor7.raft.RaftManager
 import cn.xor7.scoreboard.ScoreboardManager
+import cn.xor7.spectator.SpectatorManager.isSpectator
 import cn.xor7.tgttos.TgttosManager
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -32,6 +33,7 @@ object MapListener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
+        if(player.isSpectator) return
         ScoreboardManager.setScoreboard(player)
         if (GameMap.trackers.containsKey(player.name)) return
         player.teleport(player.world.spawnLocation)
